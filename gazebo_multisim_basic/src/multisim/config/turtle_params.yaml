@@ -1,0 +1,24 @@
+
+turtles:
+  ros__parameters:
+    ref_x: 10.0
+    ref_y: 5.0
+    ref_z: 0.0
+
+turtle1:
+  ros__parameters:
+    pos_x: -5.0
+    pos_y: 0.0
+    pos_z: 0.0
+
+turtle2:
+  ros__parameters:
+    pos_x: 15.0
+    pos_y: 15.0
+    pos_z: 0.0
+
+turtle3:
+  ros__parameters:
+    pos_x: 7.0
+    pos_y: 15.0
+    pos_z: 0.0
