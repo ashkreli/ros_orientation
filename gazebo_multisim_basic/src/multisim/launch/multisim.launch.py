@@ -35,5 +35,11 @@ def generate_launch_description():
             name='turtle3',
             executable='turtle',
             parameters=[config]
-            )
+            ),
+        Node(
+            package='multisim',
+            name='turtle4',
+            executable='turtle',
+            parameters=[config]
+            ),
     ])

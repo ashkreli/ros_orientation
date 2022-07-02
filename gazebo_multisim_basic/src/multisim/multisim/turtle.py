@@ -23,15 +23,15 @@ import calcs
 from data_types import PoseTwist
 
 global step_size
-step_size = 0.2
+step_size = 0.05
 
 global k_angular, k_linear
-k_angular = 0.6
-k_linear = 0.3
+k_angular = 0.7
+k_linear = 0.5
 
 global ANGULAR_MARGIN, LINEAR_MARGIN
 ANGULAR_MARGIN = 0.02
-LINEAR_MARGIN = 0.2
+LINEAR_MARGIN = 0.1
 
 class Turtle(Node):
     def __init__(self):
@@ -73,16 +73,6 @@ class Turtle(Node):
         self.pub_cmd_vel = self.create_publisher(Twist,
                                                 '/' + self.name + '/cmd_vel',
                                                 10)
-        
-        # Publish to /new_turtle topic to signal its presence
-        self.pub_new_turtle = self.create_publisher(TurtleName,
-                                                    '/new_turtle',
-                                                    1)
-        
-        self.pub_new_turtle_timer = self.create_timer(3.0, 
-                                                      self.pub_presence,
-                                                      callback_group=self.multiple_clbk)
-
         # List of all turtles' names
         self.all_names = []
         
@@ -97,16 +87,14 @@ class Turtle(Node):
                                                 '/ref',
                                                 self.update_ref,
                                                 1)
-
+        
+        # Publish to /new_turtle topic to signal its presence
+        self.pub_new_turtle = self.create_publisher(TurtleName,
+                                                    '/new_turtle',
+                                                    1)
+        
         # Initial waypoint will be the reference
         self.waypoint = self.ref
-        
-        self.calc_waypoint_timer = self.create_timer(0.5, 
-                                                     self.calc_waypoint,
-                                                     callback_group=self.single_clbk)
-        self.approach_waypoint_timer = self.create_timer(0.5, 
-                                                         self.approach_waypoint,
-                                                         callback_group=self.single_clbk)
 
         # Dict of subscriptions to all turtles' /odom topics
         # Format: {turtle_name (str): subscription (Subscription)}
@@ -155,7 +143,18 @@ class Turtle(Node):
 
         self.future = self.client.call_async(self.req)
         self.client.destroy()
+        # Now that request went through, instantiate all timers  
+        self.pub_new_turtle_timer = self.create_timer(3.0, 
+                                                      self.pub_presence,
+                                                      callback_group=self.multiple_clbk)
         
+        self.calc_waypoint_timer = self.create_timer(0.5, 
+                                                     self.calc_waypoint,
+                                                     callback_group=self.single_clbk)
+        self.approach_waypoint_timer = self.create_timer(0.5, 
+                                                         self.approach_waypoint,
+                                                         callback_group=self.single_clbk)
+
         return self.future.result()
 
     def update_turtle_list(self, all_turtles_msg):
@@ -249,7 +248,6 @@ class Turtle(Node):
                                                cur_pose.orientation.z,
                                                cur_pose.orientation.w],
                                               'rxyz')[2]
-            # theta_cur = calcs.normalize(theta_cur)
             ang_err = theta_ref - theta_cur
             # self.get_logger().info("Theta cur: " + str(theta_cur))
             # self.get_logger().info("Theta ref: " + str(theta_ref))
@@ -263,7 +261,6 @@ class Turtle(Node):
             cmd_vel.linear.x = k_linear * dist_err2
         self.pub_cmd_vel.publish(cmd_vel)
         # self.get_logger().info("Approaching waypoint")
-
         
         
 
