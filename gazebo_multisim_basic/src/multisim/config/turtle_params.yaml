@@ -1,7 +1,7 @@
 
 turtles:
   ros__parameters:
-    ref_x: 10.0
+    ref_x: -5.0
     ref_y: 5.0
     ref_z: 0.0
 

@@ -14,8 +14,6 @@
 
   <build_depend>gazebo_multisim_interfaces</build_depend>
   <exec_depend>gazebo_multisim_interfaces</exec_depend>
-  <build_depend>tf_transformations</build_depend>
-  <exec_depend>tf_transformations</exec_depend>
 
   <exec_depend>gazebo_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>

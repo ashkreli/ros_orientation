@@ -8,7 +8,6 @@ from ament_index_python import get_package_share_directory
 from geometry_msgs.msg import Pose, Quaternion, Point, Twist, PoseWithCovariance, TwistWithCovariance
 from nav_msgs.msg import Odometry
 from gazebo_msgs.srv import SpawnEntity
-from tf_transformations import euler_from_quaternion, quaternion_from_euler
 
 # Find path to 'calcs.py' so that it can be included
 # Uses pathlib.Path() which finds the path of the current file
@@ -237,25 +236,27 @@ class Turtle(Node):
         # Rotate and move forward towards waypoint (or transitory reference)
         elif calcs.dist(calcs.pose_to_pt(cur_pose), 
                         self.ref) > LINEAR_MARGIN and not self.done: 
-            dist_err1 = calcs.dist(calcs.pose_to_pt(cur_pose), self.waypoint)
+            # dist_err1 = calcs.dist(calcs.pose_to_pt(cur_pose), self.waypoint)
             dist_err2 = calcs.dist(calcs.pose_to_pt(cur_pose), self.ref)
-            theta_ref = numpy.arctan2(self.waypoint.y-cur_pose.position.y, 
+            theta_ref = math.atan2(self.waypoint.y-cur_pose.position.y, 
                                       self.waypoint.x-cur_pose.position.x)
+            theta_ref = calcs.normalize(theta_ref)
             # Convert Quaternion into Euler angles, and retrieve the angle
             # about the z-axis, since that corresponds to rotation of vehicle
-            theta_cur = euler_from_quaternion([cur_pose.orientation.x,
-                                               cur_pose.orientation.y,
-                                               cur_pose.orientation.z,
-                                               cur_pose.orientation.w],
-                                              'rxyz')[2]
+            theta_cur = calcs.euler_from_quaternion(cur_pose.orientation.x,
+                                                    cur_pose.orientation.y,
+                                                    cur_pose.orientation.z,
+                                                    cur_pose.orientation.w)[2]
+            theta_cur = calcs.normalize(theta_cur)
             ang_err = theta_ref - theta_cur
             # self.get_logger().info("Theta cur: " + str(theta_cur))
             # self.get_logger().info("Theta ref: " + str(theta_ref))
             if abs(ang_err) > ANGULAR_MARGIN:
-                if abs(ang_err) < abs(2 * math.pi - ang_err):
+                cmd_vel.angular.z = k_angular * ang_err
+                '''if abs(ang_err) < abs(2 * math.pi - ang_err):
                     cmd_vel.angular.z = k_angular * ang_err
                 else:
-                    cmd_vel.angular.z = k_angular * (2 * math.pi - ang_err)
+                    cmd_vel.angular.z = k_angular * (2 * math.pi - ang_err)'''
             else:
                 cmd_vel.angular.z = 0.0
             cmd_vel.linear.x = k_linear * dist_err2
