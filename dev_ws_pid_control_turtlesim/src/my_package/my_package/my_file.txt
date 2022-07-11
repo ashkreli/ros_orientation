@@ -1,0 +1,12 @@
+Insert the relavent number between the dollar signs 
+    
+Insert X destination coordinate (must be between -10 and 10):
+	destX = $7$
+Insert Y destination coordinate (must be between -10 and 10):
+	destY = $7$
+Insert kp constant (0.5 worked fine):
+	kp_const = $0.8$
+Insert ki constant (0.001 worked fine): 
+	ki_const = $0.001$
+Insert kd constant (0.01 worked fine):
+	kd_const = $0.01$

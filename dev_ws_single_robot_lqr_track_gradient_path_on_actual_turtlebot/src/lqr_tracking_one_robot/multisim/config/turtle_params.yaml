@@ -1,0 +1,5 @@
+turtle1:
+  ros__parameters:
+    ref_x: 3.0
+    ref_y: -3.0
+    ref_z: 0.0 
