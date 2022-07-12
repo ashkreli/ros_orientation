@@ -1,10 +1,9 @@
-## **HOW TO:** Creating PID Controlled Location Seeker Simulation with ROS2 and Turtlebot
-
-**Step-by-step explanation**
+# **HOW TO:** Creating PID Controlled Location Seeker Simulation with ROS2 and Turtlebot
+###**Step-by-step explanation**
 
 Note: this assumes that from the published ROS2 tutorials all of the beginner and intermediate tutorials were complete.
 
-\1. Configure the environment and create a workspace:
+## 1. Configure the environment and create a workspace:
 
 Note: for a deeper explanation of this look through the following tutorials:
 
@@ -51,7 +50,7 @@ Note: for a deeper explanation of this look through the following tutorials:
 
 ***colcon build***
 
-\2. Understanding (relevant) nodes and topics/services/parameters/actions:
+## 2. Understanding (relevant) nodes and topics/services/parameters/actions:
 
 Note: for a deeper explanation of this look through the following tutorial:
 
@@ -97,7 +96,7 @@ For example:
 
 ***ros2 interface show turtlesim/msg/Pose***
 
-\3. Create a basic launch file consisting of the relevant nodes:
+## 3. Create a basic launch file consisting of the relevant nodes:
 
 Note: for a deeper explanation of this look through the following tutorial:
 
@@ -252,7 +251,7 @@ Note: if you haven’t followed the convention of calling your launch file with 
 
 1. Like always (as you’ve done plenty of times throughout the tutorial), within the ***package.xml*** file, change everywhere it says TODO to the relevant information (your name, your email, proper description, and proper license {“Apache License 2.0”}.
 
-\4. Write the actual code (pid.py):
+## 4. Write the actual code (pid.py):
 
 Note: for a deeper explanation of this look through the following tutorial:
 
