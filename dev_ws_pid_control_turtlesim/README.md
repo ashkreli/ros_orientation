@@ -26,9 +26,9 @@ Note: for a deeper explanation of this look through the following tutorials:
 1. ***sudo apt install python3-colcon-common-extensions***
 1. Create, clone, and build an example workspace by pasting the following in the terminal:
 
-***mkdir -p ~/dev\_ws/src***
+`mkdir -p ~/dev\_ws/src`
 
-***cd ~/dev\_ws/src***
+`cd ~/dev\_ws/src`
 
 ***git clone https://github.com/ros/ros\_tutorials.git -b foxy-devel***
 
