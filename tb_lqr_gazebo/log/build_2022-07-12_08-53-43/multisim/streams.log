@@ -1,0 +1,17 @@
+[1.279s] Invoking command in '/home/ashkreli/ros_orientation/tb_lqr_gazebo/build/multisim': PYTHONPATH=/home/ashkreli/ros_orientation/tb_lqr_gazebo/build/multisim/prefix_override:/home/ashkreli/ros_orientation/tb_lqr_gazebo/install/multisim/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /home/ashkreli/ros_orientation/tb_lqr_gazebo/build/multisim/build --no-deps install_data
+[1.548s] running develop
+[1.701s] running egg_info
+[1.702s] writing multisim.egg-info/PKG-INFO
+[1.703s] writing dependency_links to multisim.egg-info/dependency_links.txt
+[1.703s] writing entry points to multisim.egg-info/entry_points.txt
+[1.704s] writing requirements to multisim.egg-info/requires.txt
+[1.704s] writing top-level names to multisim.egg-info/top_level.txt
+[1.744s] reading manifest file 'multisim.egg-info/SOURCES.txt'
+[1.745s] writing manifest file 'multisim.egg-info/SOURCES.txt'
+[1.788s] running build_ext
+[1.789s] Creating /home/ashkreli/ros_orientation/tb_lqr_gazebo/install/multisim/lib/python3.8/site-packages/multisim.egg-link (link to .)
+[1.791s] Installing turtle script to /home/ashkreli/ros_orientation/tb_lqr_gazebo/install/multisim/lib/multisim
+[1.791s] 
+[1.791s] Installed /home/ashkreli/ros_orientation/tb_lqr_gazebo/build/multisim
+[1.791s] running install_data
+[1.825s] Invoked command in '/home/ashkreli/ros_orientation/tb_lqr_gazebo/build/multisim' returned '0': PYTHONPATH=/home/ashkreli/ros_orientation/tb_lqr_gazebo/build/multisim/prefix_override:/home/ashkreli/ros_orientation/tb_lqr_gazebo/install/multisim/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --editable --build-directory /home/ashkreli/ros_orientation/tb_lqr_gazebo/build/multisim/build --no-deps install_data

@@ -1,0 +1,9 @@
+source;share/multisim/hook/pythonpath.ps1
+source;share/multisim/hook/pythonpath.dsv
+source;share/multisim/hook/pythonpath.sh
+source;share/multisim/hook/ament_prefix_path.ps1
+source;share/multisim/hook/ament_prefix_path.dsv
+source;share/multisim/hook/ament_prefix_path.sh
+source;../../build/multisim/share/multisim/hook/pythonpath_develop.ps1
+source;../../build/multisim/share/multisim/hook/pythonpath_develop.dsv
+source;../../build/multisim/share/multisim/hook/pythonpath_develop.sh
