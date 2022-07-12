@@ -18,9 +18,9 @@ Note: for a deeper explanation of this look through the following tutorials:
 1. Open terminal (Ctrl+T)
 1. Paste the following with inputting your\_domian\_id (a number between 0-100):
 
-***echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc***
+`echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc
 
-***echo "export ROS\_DOMAIN\_ID=<your\_domain\_id>" >> ~/.bashrc***
+***echo "export ROS\_DOMAIN\_ID=<your\_domain\_id>" >> ~/.bashrc`
 
 1. Install colcon by pasting the following in the terminal:
 1. ***sudo apt install python3-colcon-common-extensions***
