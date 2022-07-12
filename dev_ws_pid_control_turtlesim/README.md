@@ -118,27 +118,27 @@ Note: You could name your launch file whatever you want, but you should have the
 
 `Node(`
 
-`            ``package='turtlesim',`
+`            package='turtlesim',`
 
-`            ``namespace='turtlesim1',`
+`            namespace='turtlesim1',`
 
-`            ``executable='turtlesim\_node',`
+`            executable='turtlesim\_node',`
 
-`            ``name = 'sim'`
+`            name = 'sim'`
 
-`        ``)`
+`        )`
 
 For the latter, you will have to reassign the relevant package, relevant namespace, and relevant executable. In my case, the package name is `“my\_package”` and the code I wrote to generate the movement is named `“pid.py”` meaning that the second node’s description will be as follows:
 
 `Node(`
 
-`            ``package='my\_package',`
+`            package='my\_package',`
 
-`            ``namespace='pid',`
+`            namespace='pid',`
 
-`            ``executable='pid'`
+`            executable='pid'`
 
-`        ``)`
+`        )`
 
 4. Putting the steps 2 and 3 together, the complete code within the launch file for this case could be the following:
 
@@ -166,31 +166,31 @@ For the latter, you will have to reassign the relevant package, relevant namespa
 
 `def generate\_launch\_description():`
 
-`    ``return LaunchDescription([`
+`    return LaunchDescription([`
 
-`        ``Node(`
+`        Node(`
 
-`            ``package='turtlesim',`
+`            package='turtlesim',`
 
-`            ``namespace='turtlesim1',`
+`            namespace='turtlesim1',`
 
-`            ``executable='turtlesim\_node',`
+`            executable='turtlesim\_node',`
 
-`            ``name = 'sim'`
+`            name = 'sim'`
 
-`        ``),`
+`        ),`
 
-`        ``Node(`
+`        Node(`
 
-`            ``package='my\_package',`
+`            package='my\_package',`
 
-`            ``namespace='pid',`
+`            namespace='pid',`
 
-`            ``executable='pid'`
+`            executable='pid'`
 
-`        ``)`
+`        )`
 
-`    ``])`
+`    ])`
 
 You could go ahead and paste this into your launch file, but note that the names should be consistent with the ones you’ve selected.
 
@@ -198,15 +198,15 @@ You could go ahead and paste this into your launch file, but note that the names
 
 `data\_files=[`
 
-`        ``('share/ament\_index/resource\_index/packages',`
+`        ('share/ament\_index/resource\_index/packages',`
 
-`            ``['resource/' + package\_name]),`
+`            ['resource/' + package\_name]),`
 
-`        ``('share/' + package\_name, ['package.xml']),`
+`        ('share/' + package\_name, ['package.xml']),`
 
-`        ``(os.path.join('share', package\_name, 'launch'),`
+`        (os.path.join('share', package\_name, 'launch'),`
 
-`         ``glob(os.path.join('launch', '\*.launch.py')))`
+`         glob(os.path.join('launch', '\*.launch.py')))`
 
 Note: if you haven’t followed the convention of calling your launch file with a name that ends with “`.launch.py`” you will have to change the `os.path.join` command to fit your file name.
 
@@ -214,20 +214,20 @@ Note: if you haven’t followed the convention of calling your launch file with 
 
 `'console\_scripts': [`
 
-`            ``'pid = multisim.pid:main'`
+`            'pid = multisim.pid:main'`
 
-`        ``],`
+`        ],`
 
 7. Like always (as you’ve done plenty of times throughout the tutorial), within the `setup.py` file, change everywhere it says TODO to the relevant information (your name, your email, proper description, and proper license {“Apache License 2.0”}.
 8. You will likely always have a dependency on `ros2launch` and `rclpy`. You must add these dependencies to your `package.xml` file. In this case, since you will be using `turtlesim` and `geometry\_msgs` (which you’ve seen is necessary through step “2. Understanding (relevant) nodes and topics/services/parameters/actions”), you must add them as well. To some these two up, you must add the following to your `package.xml` file:
 
-`  ``<exec\_depend>rclpy</exec\_depend>`
+`  <exec\_depend>rclpy</exec\_depend>`
 
-`  ``<exec\_depend>geometry\_msgs</exec\_depend>`
+`  <exec\_depend>geometry\_msgs</exec\_depend>`
 
-`  ``<exec\_depend>turtlesim</exec\_depend>`
+`  <exec\_depend>turtlesim</exec\_depend>`
 
-`  ``<exec\_depend>ros2launch</exec\_depend>`
+`  <exec\_depend>ros2launch</exec\_depend>`
 
 9. Like always (as you’ve done plenty of times throughout the tutorial), within the `package.xml` file, change everywhere it says TODO to the relevant information (your name, your email, proper description, and proper license {“Apache License 2.0”}.
 
@@ -299,21 +299,21 @@ The full `\_\_init\_\_` function’s code will look like this:
 
 `def \_\_init\_\_(self):`
 
-`	``super().\_\_init\_\_('pid')`
+`	super().\_\_init\_\_('pid')`
 
-`	``self.publisher\_vel = self.create\_publisher(Twist, '/turtlesim1/turtle1/cmd\_vel', 10)`
+`	self.publisher\_vel = self.create\_publisher(Twist, '/turtlesim1/turtle1/cmd\_vel', 10)`
 
-`	``self.posX = 0`
+`	self.posX = 0`
 
-`	``self.posY = 0`
+`	self.posY = 0`
 
-`	``self.subscriber\_pos = self.create\_subscription(Pose, '/turtlesim1/turtle1/pose', self.update\_pose, 10)`
+`	self.subscriber\_pos = self.create\_subscription(Pose, '/turtlesim1/turtle1/pose', self.update\_pose, 10)`
 \`
 
 
-`	``timer\_period = 0.01 # timer will go off every 0.01 seconds`
+`	timer\_period = 0.01 # timer will go off every 0.01 seconds`
 
-`	``self.timer = self.create\_timer(timer\_period, self.get\_pid)`	
+`	self.timer = self.create\_timer(timer\_period, self.get\_pid)`	
 
 8. As mentioned before, the `init` function calls a function that updates the position subscribed. That function will receive `self` and also `msg`. `msg` will be provided through the subscription and will contain the components of `Pose`. In step 6 of the “2. Understanding (relevant) nodes and topics/services/parameters/actions” section, you found the different components of `Pose`. The relevant ones for our purposes were `x` and `y`, which are of float type. This means, that in order to update the component we’ve created (`posX` and `posY`) you can just equate them to the `x` and `y` values of `msg`. The code for this function ends up looking as follows:
 
@@ -347,53 +347,53 @@ The complete code of the callback function should look something like this:
 
 `def get\_pid(self):`		
 
-`	``msg = Twist()`
+`	msg = Twist()`
 
-`	``msg.linear.x = random.uniform(-10,10)`
+`	msg.linear.x = random.uniform(-10,10)`
 
-`	``msg.linear.y = random.uniform(-10,10)`
+`	msg.linear.y = random.uniform(-10,10)`
 
-`	``self.publisher\_vel.publish(msg)`
+`	self.publisher\_vel.publish(msg)`
 \`
 
 
-`	``self.get\_logger().info('Subscribing X: "%s"' %str(self.posX))`		
+`	self.get\_logger().info('Subscribing X: "%s"' %str(self.posX))`		
 
-`	``self.get\_logger().info('Subscribing Y: "%s"' %str(self.posY))`
+`	self.get\_logger().info('Subscribing Y: "%s"' %str(self.posY))`
 
 11. Steps 3 through 7 should have concluded the class creation portion of the code. As always. We should define a main function and call the said main function. Since this is pretty self explanatory, I won’t go into the details, but the code should look something like this:
 
 `def main(args=None):`
 
-`	``# Initialize the rclpy library`
+`	# Initialize the rclpy library`
 
-`	``rclpy.init(args=args)`
+`	rclpy.init(args=args)`
 
-`	``# Create the node`
+`	# Create the node`
 
-`	``pid = PID\_control()`
+`	pid = PID\_control()`
 
-`	``# Spin the node so the callback function is called.`
+`	# Spin the node so the callback function is called.`
 
-`	``# Publish any pending messages to the topics.`
+`	# Publish any pending messages to the topics.`
 
-`	``rclpy.spin(pid)`
+`	rclpy.spin(pid)`
 
-`	``# Destroy the node explicitly`
+`	# Destroy the node explicitly`
 
-`	``# (optional - otherwise it will be done automatically`
+`	# (optional - otherwise it will be done automatically`
 
-`	``# when the garbage collector destroys the node object)`
+`	# when the garbage collector destroys the node object)`
 
-`	``pid.destroy\_node()`
+`	pid.destroy\_node()`
 
-`	``# Shutdown the ROS client library for Python`
+`	# Shutdown the ROS client library for Python`
 
-`	``rclpy.shutdown()`
+`	rclpy.shutdown()`
 
 `if \_\_name\_\_ == '\_\_main\_\_':`
 
-`	``main()`
+`	main()`
 
 12. After following all the previous steps, you should be able to build your package, source your code, and launch it by pasting the following in your workspace terminal:
 
