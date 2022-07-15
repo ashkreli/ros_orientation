@@ -1,12 +1,15 @@
 # Concepts
 
-## Launch file
+## Launch Files
 
+Launching multiple ROS 2 nodes with a launch file to reduce the number of terminals 
+one needs to open
 
+## Configuration Files
 
-## Config file
-
-
+The `src/config` directory holds the description of the Turtlebot in simulation,
+and also a parameter configuration file that specifies desired initial positions
+of the Turtlebots to be simulated.
 
 ## Executors and Callback Groups
 

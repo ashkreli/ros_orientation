@@ -1,6 +1,5 @@
 #! /usr/bin/env python
-import math
-import os, rclpy, numpy
+import math, os, rclpy
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
@@ -14,7 +13,6 @@ from gazebo_msgs.srv import SpawnEntity
 # .absolute() gives the absolute path
 # .parent gives the directory of the file
 import sys, pathlib
-# sys.path.append("~/ros_orientation1/gazebo_multisim/install/gazebo_multisim_interfaces")
 from gazebo_multisim_interfaces.msg import TurtleName, TurtleNames
 path = pathlib.Path(__file__).parent.absolute()
 sys.path.append(str(path))
@@ -22,7 +20,7 @@ import calcs
 from data_types import PoseTwist
 
 global step_size
-step_size = 0.05
+step_size = 0.1
 
 global k_angular, k_linear
 k_angular = 0.7
@@ -32,18 +30,23 @@ global ANGULAR_MARGIN, LINEAR_MARGIN
 ANGULAR_MARGIN = 0.02
 LINEAR_MARGIN = 0.1
 
+# Physical constraints on robot
+global MAX_LIN_VEL, MAX_ANG_VEL
+MAX_LIN_VEL = 0.9
+MAX_ANG_VEL = 2.5
+
 class Turtle(Node):
     def __init__(self):
         super().__init__('turtle')
-        # cCllback groups
+        # Callback groups
         self.multiple_clbk = ReentrantCallbackGroup()
         self.single_clbk = MutuallyExclusiveCallbackGroup()
+        
         # Done with objective to reach reference?
         self.done = False
 
         # Name of turtle
         self.name = self.get_name()
-        # self.get_logger().info("Name: "+ self.name)
 
         # Startup parameters
         self.declare_parameters(namespace='',
@@ -66,12 +69,18 @@ class Turtle(Node):
             self.get_logger().info('service not available, waiting again...')
         self.req = SpawnEntity.Request()
         self.ref = Point()
+        self.waypoint = Point()
         self.send_request()
 
+        # Destroy client to service once service has been processed
+        self.client.destroy()
+
+        self.cmd_vel = Twist()
         # Publisher to own cmd_vel
         self.pub_cmd_vel = self.create_publisher(Twist,
                                                 '/' + self.name + '/cmd_vel',
                                                 10)
+        
         # List of all turtles' names
         self.all_names = []
         
@@ -91,9 +100,6 @@ class Turtle(Node):
         self.pub_new_turtle = self.create_publisher(TurtleName,
                                                     '/new_turtle',
                                                     1)
-        
-        # Initial waypoint will be the reference
-        self.waypoint = self.ref
 
         # Dict of subscriptions to all turtles' /odom topics
         # Format: {turtle_name (str): subscription (Subscription)}
@@ -101,8 +107,7 @@ class Turtle(Node):
 
         # PoseTwists of all turtles
         # Format: {turtle_name (str): [PoseTwist, activated** (bool)]}
-        # **activated tells us whether the PoseTwist is generic or from
-        # a real message
+        # **activated tells us whether or not PoseTwist is from a real message
         self.all_info = {}
     
     def pub_presence(self):
@@ -112,8 +117,20 @@ class Turtle(Node):
         self.pub_new_turtle.publish(now_online)
         # self.get_logger().info(self.name + " NOW ONLINE")
 
-    def set_params(self):
-        " Set parameters from the /config and fed in launch file "
+    def send_request(self):
+        """ Send request to /spawn_entity service """
+        # Get path to the Turtlebot3 burger description
+        urdf_file_path = os.path.join(get_package_share_directory('multisim'),
+                                     'config',
+                                     'model.sdf'
+                                     )
+
+        self.req.name = self.get_name()
+        self.req.xml = str(open(urdf_file_path, 'r').read())
+        self.req.robot_namespace = self.get_name()
+        self.req.reference_frame = "world"
+        
+        # Set parameters from the /config and fed in launch file
         self.req.initial_pose = Pose()
         self.req.initial_pose.position.x = self.get_parameter('pos_x').get_parameter_value().double_value
         self.req.initial_pose.position.y = self.get_parameter('pos_y').get_parameter_value().double_value
@@ -125,37 +142,23 @@ class Turtle(Node):
         self.req.initial_pose.orientation.z = self.get_parameter('orient_z').get_parameter_value().double_value
         self.req.initial_pose.orientation.w = self.get_parameter('orient_w').get_parameter_value().double_value
 
-    def send_request(self):
-        """ Send request to /spawn_entity service """
-        # Get path to the Turtlebot3 burger
-        urdf_file_path = os.path.join(os.path.join(
-                                        get_package_share_directory("turtlebot3_gazebo"), 
-                                        "models",
-                                        "turtlebot3_burger",
-                                        "model.sdf"))
-
-        self.req.name = self.get_name()
-        self.req.xml = str(open(urdf_file_path, 'r').read())
-        self.req.robot_namespace = self.get_name()
-        self.req.reference_frame = "world"
-        self.set_params()
+        # Let initial waypoint be where the robot currently is
+        self.waypoint = calcs.pose_to_pt(self.req.initial_pose)
 
         self.future = self.client.call_async(self.req)
-        self.client.destroy()
+
         # Now that request went through, instantiate all timers  
-        self.pub_new_turtle_timer = self.create_timer(3.0, 
+        self.pub_new_turtle_timer = self.create_timer(2.0, 
                                                       self.pub_presence,
                                                       callback_group=self.multiple_clbk)
-        
-        self.calc_waypoint_timer = self.create_timer(0.5, 
+        self.calc_waypoint_timer = self.create_timer(0.6, 
                                                      self.calc_waypoint,
-                                                     callback_group=self.single_clbk)
-        self.approach_waypoint_timer = self.create_timer(0.5, 
+                                                     callback_group=self.multiple_clbk)
+        self.approach_waypoint_timer = self.create_timer(0.3, 
                                                          self.approach_waypoint,
-                                                         callback_group=self.single_clbk)
+                                                         callback_group=self.multiple_clbk)
 
         return self.future.result()
-
     def update_turtle_list(self, all_turtles_msg):
         """ Updates list of all turtle names as well as subscriptions """
         # self.get_logger().info("Current turtles: " + str(all_turtles_msg.turtle_names))
@@ -174,22 +177,25 @@ class Turtle(Node):
 
     def update_ref(self, new_ref):
         """ Updates the reference point if '/ref' topic is updated """
+        if not calcs.pt_equal(self.ref, new_ref):
+            self.done = False
         self.ref.x = new_ref.x
         self.ref.y = new_ref.y
         # self.get_logger().info("Reference updated: (" + str(new_ref.x) + ", " + str(new_ref.y) + ")")
 
     def generate_callback(self, name):
-        """ Generate a callback function to update a specific PoseTwist 
+        """ 
+            Generate a callback function to update a specific PoseTwist 
             given that a certain Odometry topic has been updated 
-            - no other way to incorporate the name of the turtle being 
-            updated """
+            (no other way to incorporate the name of the turtle being updated)
+        """
         def update_pose_twist(new_odom: Odometry) -> None:
             """ Updates the PoseTwist of the turtle with name in field 'name' """
             if name not in self.all_info:
                 self.all_info[name] = [PoseTwist(), False]
-            (self.all_info[name])[1] = True
-            (self.all_info[name])[0].pose = new_odom.pose.pose
-            (self.all_info[name])[0].twist = new_odom.twist.twist
+            self.all_info[name][1] = True
+            self.all_info[name][0].pose = new_odom.pose.pose
+            self.all_info[name][0].twist = new_odom.twist.twist
             # self.get_logger().info("PoseTwist updated")
         return update_pose_twist
 
@@ -199,7 +205,7 @@ class Turtle(Node):
             finds the next waypoint for the robot, which will subsequently
             use PID or LQR to reach it  
         """
-        if (self.name not in self.all_info) or (not (self.all_info[self.name])[1]):
+        if (self.name not in self.all_info) or (not (self.all_info[self.name])[1]) or self.done:
             return
         # Position of turtle currently
         cur_pt = calcs.pose_to_pt((self.all_info[self.name])[0].pose)
@@ -207,61 +213,88 @@ class Turtle(Node):
         rep_grad = Point()
         for turtle in self.all_names:
             if not (turtle == self.name):
-                calcs.add_vecs(rep_grad, 
-                              calcs.repulsive_potential_grad(
-                                calcs.pose_to_pt((self.all_info[turtle])[0].pose), 
-                                                 cur_pt))
+                rep_grad = calcs.add_vecs(rep_grad, 
+                               calcs.repulsive_potential_grad(
+                                  cur_pt,
+                                  calcs.pose_to_pt(self.all_info[turtle][0].pose),
+                                  self.all_info[self.name][0]))
+        # self.get_logger().info("Repulsion: (" + str(rep_grad.x) + ", " + str(rep_grad.y) + ')')
         ref_grad = calcs.reference_potential_grad(self.ref, cur_pt)
-        self.waypoint.x = cur_pt.x + step_size * (-rep_grad.x + -ref_grad.x)
-        self.waypoint.y = cur_pt.y + step_size * (-rep_grad.y + -ref_grad.y)
-        self.waypoint.z = cur_pt.z + step_size * (-rep_grad.z + -ref_grad.z)
-        # self.get_logger().info("Waypoint: (" + str(self.waypoint.x) + ", " + str(self.waypoint.y) + ')')
-        return
+        tot_grad = calcs.add_vecs(ref_grad, rep_grad)
+        candidate_wypt = Point(x=cur_pt.x + step_size * -(tot_grad.x),
+                               y=cur_pt.y + step_size * -(tot_grad.y),
+                               z=cur_pt.z + step_size * -(tot_grad.z)
+                            )
+        # self.get_logger().info(self.name + ": (" + str(candidate_wypt.x) + ", " + str(candidate_wypt.y) + ')')
+        if calcs.dist(candidate_wypt, self.ref) < LINEAR_MARGIN:
+            self.waypoint = self.ref
+        else:
+            self.waypoint = candidate_wypt
     
     def approach_waypoint(self):
         """ Use PID control to approach the current waypoint """
+        # Return if no valid position information yet
         if self.name not in self.all_info or not (self.all_info[self.name])[1]:
-            # self.get_logger().info("Returned prematurely")
             return
         # Position of turtle currently
         cur_pose = (self.all_info[self.name])[0].pose
         cmd_vel = Twist()
-        # self.get_logger().info("Distance: " + str(calcs.dist(calcs.pose_to_pt(cur_pose), self.ref)))
         # Stop if reasonably close to reference
-        if calcs.dist(calcs.pose_to_pt(cur_pose), self.ref) < 0.2 and not self.done:
+        if calcs.dist(calcs.pose_to_pt(cur_pose), self.ref) < LINEAR_MARGIN and not self.done:
             cmd_vel.angular.z = 0.0
             cmd_vel.linear.x = 0.0
             self.done = True
-            # self.get_logger().info("Done!")
+            return
         # Rotate and move forward towards waypoint (or transitory reference)
-        elif calcs.dist(calcs.pose_to_pt(cur_pose), 
-                        self.ref) > LINEAR_MARGIN and not self.done: 
-            # dist_err1 = calcs.dist(calcs.pose_to_pt(cur_pose), self.waypoint)
-            dist_err2 = calcs.dist(calcs.pose_to_pt(cur_pose), self.ref)
-            theta_ref = math.atan2(self.waypoint.y-cur_pose.position.y, 
-                                      self.waypoint.x-cur_pose.position.x)
-            theta_ref = calcs.normalize(theta_ref)
-            # Convert Quaternion into Euler angles, and retrieve the angle
-            # about the z-axis, since that corresponds to rotation of vehicle
-            theta_cur = calcs.euler_from_quaternion(cur_pose.orientation.x,
-                                                    cur_pose.orientation.y,
-                                                    cur_pose.orientation.z,
-                                                    cur_pose.orientation.w)[2]
-            theta_cur = calcs.normalize(theta_cur)
-            ang_err = theta_ref - theta_cur
-            # self.get_logger().info("Theta cur: " + str(theta_cur))
-            # self.get_logger().info("Theta ref: " + str(theta_ref))
-            if abs(ang_err) > ANGULAR_MARGIN:
-                cmd_vel.angular.z = k_angular * ang_err
-                '''if abs(ang_err) < abs(2 * math.pi - ang_err):
-                    cmd_vel.angular.z = k_angular * ang_err
+        theta_ref = math.atan2(self.waypoint.y-cur_pose.position.y, 
+                               self.waypoint.x-cur_pose.position.x)
+        theta_ref = calcs.normalize(theta_ref)
+        # Convert Quaternion into Euler angles, and retrieve the angle
+        # about the z-axis, since that corresponds to rotation of vehicle
+        theta_cur = calcs.euler_from_quaternion(cur_pose.orientation.x,
+                                                cur_pose.orientation.y,
+                                                cur_pose.orientation.z,
+                                                cur_pose.orientation.w)[2]
+        theta_cur = calcs.normalize(theta_cur)
+        ang_err = theta_ref - theta_cur
+        # self.get_logger().info("Theta cur: " + str(theta_cur))
+        # self.get_logger().info("Theta ref: " + str(theta_ref))
+        if abs(ang_err) > ANGULAR_MARGIN:
+            if abs(ang_err) > math.pi:
+                if theta_cur < theta_ref:
+                    theta_cur += 2 * math.pi
                 else:
-                    cmd_vel.angular.z = k_angular * (2 * math.pi - ang_err)'''
+                    theta_ref += 2 * math.pi
+            if abs(theta_ref - theta_cur) < (2. * math.pi - abs(theta_ref - theta_cur)):
+                cmd_vel.angular.z = k_angular * (theta_ref - theta_cur)
             else:
-                cmd_vel.angular.z = 0.0
-            cmd_vel.linear.x = k_linear * dist_err2
+                cmd_vel.angular.z = k_angular * (theta_cur - theta_ref)
+            # cmd_vel.angular.z = k_angular * (theta_cur - theta_ref)
+        else:
+            cmd_vel.angular.z = 0.0
+        
+        # Add repulsive potential gradients from other turtles
+        rep_grad = Point()
+        for turtle in self.all_names:
+            if not (turtle == self.name):
+                rep_grad = calcs.add_vecs(rep_grad, 
+                               calcs.repulsive_potential_grad(
+                                  calcs.pose_to_pt(self.all_info[self.name][0].pose),
+                                  calcs.pose_to_pt(self.all_info[turtle][0].pose)))
+        # Recover repulsion force magnitude
+        rep_mag = calcs.dist(rep_grad, Point())
+        # Linear vel inversely proportional to repulsion, modulated by distance from reference
+        if rep_mag > 0.0:
+            cmd_vel.linear.x = (1 / rep_mag) * calcs.dist(calcs.pose_to_pt(cur_pose), self.ref)
+        else:
+            cmd_vel.linear.x = k_linear * calcs.dist(calcs.pose_to_pt(cur_pose), self.ref)
+        # Cap to maximum velocities
+        if cmd_vel.linear.x > MAX_LIN_VEL:
+            cmd_vel.linear.x = MAX_LIN_VEL
+        if cmd_vel.angular.z > MAX_ANG_VEL:
+            cmd_vel.angular.z = MAX_ANG_VEL
+        # Publish desired velocity
         self.pub_cmd_vel.publish(cmd_vel)
-        # self.get_logger().info("Approaching waypoint")
         
         
 
@@ -280,6 +313,7 @@ def main(args = None):
     # when the garbage collector destroys the node object)
     turtle_node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
