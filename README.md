@@ -28,8 +28,11 @@ folder and a detailed explanation of our work can be found in our reports.
 - gazebo_multisim_basic (Arba)
     - Control of multiple robots on a more sophisticated simulation platform,
         Gazebo, to approach a common reference point without colliding
+- real_single_lqr_gradient_path (Elianne)
+    - Control of a single robot on a actual turtlebots
+        to approach a common reference point without colliding by using an LQR controller
 - gazebo_single_lqr_gradient_path (Elianne)
-    - Control of a single robots on a more sophisticated simulation platform,
+    - Control of a single robot on a more sophisticated simulation platform,
         Gazebo, to approach a common reference point without colliding by using an LQR controller
 - gazebo_multi_lqr_gradient_path (Elianne)
     - Control of multiple robots on a more sophisticated simulation platform,
