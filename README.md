@@ -29,9 +29,11 @@ folder and a detailed explanation of our work can be found in our reports.
     - Control of multiple robots on a more sophisticated simulation platform,
         Gazebo, to approach a common reference point without colliding
 - gazebo_single_lqr_gradient_path (Elianne)
-    - ()
+    - Control of a single robots on a more sophisticated simulation platform,
+        Gazebo, to approach a common reference point without colliding by using an LQR controller
 - gazebo_multi_lqr_gradient_path (Elianne)
-    - ()
+    - Control of multiple robots on a more sophisticated simulation platform,
+        Gazebo, to approach a common reference point without colliding by using an LQR controller
 - gazebo_lqr_path_tracking (Arba - in progress)
     - Building upon Elianne's work with LQR waypoint tracking, this extension of
         the project seeks to test out whether LQR can reasonably follow a given
