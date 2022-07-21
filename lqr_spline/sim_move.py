@@ -3,7 +3,7 @@ import numpy as np
 # Optional Variables
 global max_linear_velocity, max_angular_velocity
 max_linear_velocity = 3.0 # meters per second
-max_angular_velocity = 1.5708 # radians per second
+max_angular_velocity = 0.5 # radians per second
 
 def state_space_model(A, state_t_minus_1, B, control_input_t_minus_1):
     """
