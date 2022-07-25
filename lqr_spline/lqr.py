@@ -1,15 +1,16 @@
+from typing import List
 import numpy as np
 from control import lqr
 import cvxpy as cvx
 
+import sim_move
 
-def lqr_traj_track(S,s_refs,U,u_refs,dt):
+def lqr_traj_track_cvxpy(S: List[np.array],s_refs: List[np.array],u_refs: List[np.array],dt: float) -> List[np.array]:
     """
     Produces the control input vector based on an LQR controller
+    for the next s_refs and u_refs recieved as input
+    This function utilizes CVXPY to solve for the controller.
     """
-    # coppying lists
-    s_refs = s_refs.copy()
-    u_refs = u_refs.copy()
 
     # R matrix - The control input cost matrix
     R = np.array([[2,   0],  # Penalty for linear velocity error
@@ -21,54 +22,97 @@ def lqr_traj_track(S,s_refs,U,u_refs,dt):
     
 
     # get the list of state and control input matrices
-    A_tildes = getAtilde(s_refs, u_refs, dt)
-    B_tildes = getBtilde(s_refs, dt)
-
-    # setup initial cond. for opt. prob.
-    s_delta_0 = S[-1] - s_refs[len(S)-1]
-    u_delta_0 = U[-1] - u_refs[len(U)-1]
-
+    A_tildes = getAtildes(s_refs, u_refs, dt)
+    B_tildes = getBtildes(s_refs, dt)
+    
     # setup the variables for the opt. prob.
-    s_delta = cvx.Variable((3,1),name="s_delta_t")
-    u_delta = cvx.Variable((2,1),name="u_delta_t")
+    u_list = []
+    s_list = []
+    for i in range(len(s_refs)):
+        s_list.append(cvx.Variable((3,1)))
+        u_list.append(cvx.Variable((2,1)))
 
     # apply the constraints
-    constraints = [(s_delta == s_delta_0),(u_delta == u_delta_0)]
-
-    # instantiate the list of control inputs
-    us_delta = []
+    constraints = [(s_list[0] == S[-1])]
 
     # get the performance index
-    prf_inx = 0
-    for t in range(len(S)-1,len(s_refs)):
-        s_delta_t = cvx.Variable((3,1),name="s_delta_t")
-        u_delta_t = cvx.Variable((2,1),name="u_delta_t")
-
-        us_delta.append(u_delta_t)
-
+    prf_inx = cvx.quad_form((s_list[0] - s_refs[0]),Q) + cvx.quad_form((u_list[0] - u_refs[0]),R)
+    
+    for t in range(1,len(s_refs)):
+        
         # add the relavent constraint to the opt. question
-        constraints.append(s_delta_t == A_tildes[t] @ s_delta + B_tildes[t] @ u_delta)
+        constraints.append(s_list[t] - s_refs[t] == A_tildes[t] @ (s_list[t-1]-s_refs[t-1]) + B_tildes[t] @ (u_list[t-1]-u_refs[t]))
 
         # calculate the performance index
-        prf_inx += (s_delta_t.T @ Q @ s_delta_t + u_delta_t.T @ R @ u_delta_t)[0][0]
-        
-        # set current state vector and control input to the calculated next one
-        s_delta = s_delta_t
-        u_delta = u_delta_t
-    
+        prf_inx += cvx.quad_form((s_list[t] - s_refs[t]),Q) + cvx.quad_form((u_list[t] - u_refs[t]),R)
+
     # get the objective of the opt. question
     objective = cvx.Minimize(prf_inx)
 
     # define the problem and solve it
     prob = cvx.Problem(objective, constraints)
-    sol = prob.solve(verbose=True)
+    prob.solve()
 
-    # get and return the list of control inpots
-    new_U = np.array(list(map( lambda x: x.value, us_delta + u_refs[(len(S)-1) :])))
-    print(new_U)
-    return new_U
+    # return the calculated control inputs 
+    U = []
+    for i in range(len(u_list)):
+        U.append(u_list[i].value)
+    return U
 
-def getAtilde(s_refs, u_refs, dt):
+def lqr_traj_track_dare(S: List[np.array],s_refs: List[np.array],u_refs: List[np.array],dt: float) -> List[np.array]:
+    """
+    Produces the control input vector based on an LQR controller
+    for the next s_refs and u_refs recieved as input.
+    This function uses DARE to find the controller.
+    """
+    
+    # R matrix - The control input cost matrix
+    R = np.array([[2,   0],  # Penalty for linear velocity error
+                  [0,   0.5]]) # Penalty for angular velocity error
+    # Q matrix - The state cost matrix.
+    Q = np.array([[2, 0, 0],  # Penalize X position error 
+                  [0, 2, 0],  # Penalize Y position error 
+                  [0, 0, 1]]) # Penalize ANGLE heading error  
+    
+
+    # get the list of state and control input matrices
+    A_tildes = getAtildes(s_refs, u_refs, dt)
+    B_tildes = getBtildes(s_refs, dt)
+    
+    # Solutions to discrete LQR problems are obtained using the dynamic 
+    # programming method.
+    # The optimal solution is obtained recursively, starting at the last 
+    # timestep and working backwards.
+    N = len(s_refs) - 1
+ 
+    # Create a list of N + 1 elements
+    P = [None] * (N + 1)
+      
+    # LQR via Dynamic Programming
+    P[N] = Q
+ 
+    # For i = N, ..., 1
+    for i in range(N, 0, -1):
+        # Discrete-time Algebraic Riccati equation to calculate the optimal 
+        # state cost matrix
+        P[i-1] = Q + A_tildes[i].T @ P[i] @ A_tildes[i] - (A_tildes[i].T @ P[i] @ B_tildes[i]) @ np.linalg.pinv(
+            R + B_tildes[i].T @ P[i] @ B_tildes[i]) @ (B_tildes[i].T @ P[i] @ A_tildes[i])      
+    
+    # Create a list of N elements
+    K = [None] * N
+    u = [None] * N
+    
+    # new S assuming no noise and open loop
+    new_s = [S[-1]]
+    # For i = 0, ..., N - 1
+    for i in range(N):
+        # Calculate the optimal feedback gain K
+        K[i] = np.linalg.pinv(R + B_tildes[i].T @ P[i+1] @ B_tildes[i]) @ B_tildes[i].T @ P[i+1] @ A_tildes[i]
+        u[i] = - K[i] @ (new_s[i] - s_refs[i]) + u_refs[i]
+        new_s.append(sim_move.state_space_model(sim_move.getA(), new_s[i], sim_move.getB(new_s[i],dt), u[i]))
+    return u
+
+def getAtildes(s_refs: List[np.array], u_refs: List[np.array], dt: float) -> List[np.array]:
     """
     Calculates and returns the state matrices for the delta system
     for ALL refrences
@@ -80,7 +124,7 @@ def getAtilde(s_refs, u_refs, dt):
                                   [0, 0,  1                                    ]]))
     return A_tildes
 
-def getBtilde(s_refs, dt):
+def getBtildes(s_refs: List[np.array], dt: float) -> List[np.array]:
     """
     Calculates and returns the control input matrices for the delta system
     for ALL refrences
@@ -92,7 +136,7 @@ def getBtilde(s_refs, dt):
                             [0,                         dt]]))
     return B_tildes
 
-def getBhat(s, dt):
+def getBhat(s: np.array, dt: float) -> np.array:
     """
     Calculates and returns the control input matrix for the point system
     """
@@ -102,7 +146,7 @@ def getBhat(s, dt):
                    [0,                   dt]])
     return B
 
-def getAhat():
+def getAhat() -> np.array:
     """
     Calculates and returns the state matrix, A matrix
     """
