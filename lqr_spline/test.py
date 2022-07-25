@@ -1,5 +1,5 @@
 from trajectory_shapes import straight_line, circle
-import yaml
+#import yaml
 
 import lqr
 
@@ -83,5 +83,20 @@ def trying_this_out():
     plt.show()
 
 
-s_refs, u_refs = straight_line((1,1), (4,4), 50)
-lqr.lqr_traj_track([np.array([[0],[0],[0]])],s_refs,[np.array([[0],[0]])],u_refs,0.1) 
+t1 = np.arange(0.0, 2.0, 0.1)
+t2 = np.arange(0.0, 2.0, 0.01)
+
+fig, ax = plt.subplots()
+
+# note that plot returns a list of lines.  The "l1, = plot" usage
+# extracts the first element of the list into l1 using tuple
+# unpacking.  So l1 is a Line2D instance, not a sequence of lines
+l1, = ax.plot(t2, np.exp(-t2))
+l2, l3 = ax.plot(t2, np.sin(2 * np.pi * t2), '--o', t1, np.log(1 + t1), '.')
+l4, = ax.plot(t2, np.exp(-t2) * np.sin(2 * np.pi * t2), 's-.')
+
+ax.legend((l2, l4), ('oscillatory', 'damped'), loc='upper right', shadow=True)
+ax.set_xlabel('time')
+ax.set_ylabel('volts')
+ax.set_title('Damped oscillation')
+plt.show()
