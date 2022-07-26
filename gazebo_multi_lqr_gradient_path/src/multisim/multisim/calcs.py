@@ -124,7 +124,7 @@ def lqr(actual_state_x, desired_state_xf, Q, R, A, B, dt):
         # Discrete-time Algebraic Riccati equation to calculate the optimal 
         # state cost matrix
         P[i-1] = Q + A.T @ P[i] @ A - (A.T @ P[i] @ B) @ np.linalg.pinv(
-            R + B.T @ P[i] @ B) @ (B.T @ P[i] @ A)      
+                 R + B.T @ P[i] @ B) @ (B.T @ P[i] @ A)      
  
     # Create a list of N elements
     K = [None] * N
