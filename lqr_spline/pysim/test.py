@@ -1,7 +1,7 @@
-from trajectory_shapes import straight_line, circle
+from pysim.trajectory_shapes import straight_line, circle
 import yaml
 
-import lqr
+import utils.lqr as lqr
 
 
 import cvxpy as cvx
