@@ -12,13 +12,13 @@ sys.path.append(os.path.join(str(path), 'utils'))
 import lqr, sim_move
 
 global I
-I = 5
+I = 15
 
 global dt
 dt = 1 / I # s
 
 global N
-N = 20
+N = 50
  # a large enough number
 
 # Unload starting params from start.yaml
@@ -50,8 +50,10 @@ def main():
     U_cvxpy = [np.array([[0],[0]])]
     U_dare = [np.array([[0],[0]])]
     # Generate the discrete trajectory path (the reference)
-    s_refs_og, u_refs_og = trajectory_shapes.straight_line(pos_start, pos_end, N) 
-    #s_refs_og, u_refs_og = trajectory_shapes.circle((0.0, 0.0), 4.0, N, 1)
+    ''' uncomment the following line for recieving the straight line trajectory path'''
+    #s_refs_og, u_refs_og = trajectory_shapes.straight_line(pos_start, pos_end, N) 
+    ''' uncomment the following line for recieving the circular trajectory path'''
+    s_refs_og, u_refs_og = trajectory_shapes.circle((0.0, 0.0), 4.0, N, 1)
     # copy the refrences
     s_refs = s_refs_og.copy()
     u_refs = u_refs_og.copy()
@@ -59,9 +61,15 @@ def main():
         for j in range(I):
             # get the next control input vector from the lqr controller
             t0 = time.perf_counter()
+            ''' uncomment the following line for recieving the trajectory tracking cvxpy control input'''
             U_cvxpy.append(lqr.lqr_traj_track_cvxpy(S_cvxpy,s_refs,u_refs,dt)[0])
+            ''' uncomment the following line for recieving the evolving refrence point tracking cvxpy control input'''
+            #U_cvxpy.append(lqr.lqr_evol_ref_cvxpy(S_cvxpy,s_refs,dt)[0])
             t1 = time.perf_counter()
+            ''' uncomment the following line for recieving the trajectory tracking DARE control input'''
             U_dare.append(lqr.lqr_traj_track_dare(S_dare, s_refs, u_refs, dt)[0])
+            ''' uncomment the following line for recieving the evolving refrence point tracking DARE control input'''
+            #U_dare.append(lqr.lqr_evol_ref_dare(S_dare, s_refs, dt)[0])
             t2 = time.perf_counter()
             t_CVXPY.append(t1-t0)
             t_DARE.append(t2-t1)
