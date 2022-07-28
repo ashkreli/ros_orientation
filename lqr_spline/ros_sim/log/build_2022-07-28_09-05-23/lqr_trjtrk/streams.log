@@ -1,0 +1,18 @@
+[3.008s] Invoking command in '/home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk': PYTHONPATH=/home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --prefix /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk --editable --build-directory /home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk/build --no-deps install_data --install-dir /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk
+[4.114s] running develop
+[4.719s] running egg_info
+[4.719s] writing lqr_trjtrk.egg-info/PKG-INFO
+[4.721s] writing dependency_links to lqr_trjtrk.egg-info/dependency_links.txt
+[4.723s] writing entry points to lqr_trjtrk.egg-info/entry_points.txt
+[4.725s] writing requirements to lqr_trjtrk.egg-info/requires.txt
+[4.725s] writing top-level names to lqr_trjtrk.egg-info/top_level.txt
+[4.822s] reading manifest file 'lqr_trjtrk.egg-info/SOURCES.txt'
+[4.825s] writing manifest file 'lqr_trjtrk.egg-info/SOURCES.txt'
+[4.992s] running build_ext
+[4.993s] Creating /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/python3.8/site-packages/lqr-trjtrk.egg-link (link to .)
+[4.995s] Installing turtle script to /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/lqr_trjtrk
+[4.996s] 
+[4.997s] Installed /home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk
+[4.997s] running install_data
+[4.998s] copying config/turtle_params.yaml -> /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/share/lqr_trjtrk/config
+[5.085s] Invoked command in '/home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk' returned '0': PYTHONPATH=/home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --prefix /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk --editable --build-directory /home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk/build --no-deps install_data --install-dir /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk

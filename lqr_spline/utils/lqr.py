@@ -1,11 +1,13 @@
 from typing import List
 import numpy as np
-from control import lqr
 import cvxpy as cvx
 
 import sim_move
 
-def lqr_traj_track_cvxpy(S: List[np.array],s_refs: List[np.array],u_refs: List[np.array],dt: float) -> List[np.array]:
+def lqr_traj_track_cvxpy(S: List[np.array],
+                         s_refs: List[np.array],
+                         u_refs: List[np.array],
+                         dt: float) -> List[np.array]:
     """
     Produces the control input vector based on an LQR controller
     for the next s_refs and u_refs recieved as input
@@ -59,7 +61,10 @@ def lqr_traj_track_cvxpy(S: List[np.array],s_refs: List[np.array],u_refs: List[n
         U.append(u_list[i].value)
     return U
 
-def lqr_traj_track_dare(S: List[np.array],s_refs: List[np.array],u_refs: List[np.array],dt: float) -> List[np.array]:
+def lqr_traj_track_dare(S: List[np.array],
+                        s_refs: List[np.array],
+                        u_refs: List[np.array],
+                        dt: float) -> List[np.array]:
     """
     Produces the control input vector based on an LQR controller
     for the next s_refs and u_refs recieved as input.

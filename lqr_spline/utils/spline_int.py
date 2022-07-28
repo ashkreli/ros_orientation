@@ -52,7 +52,7 @@ def sqrt(lst: List[float]):
     return a
 
 def gen_s_u(waypts: List[Tuple[float, np.array]], N:int):
-    """ Interpolates 3rd-degree polynomials from given waypoints (p, (x, y)) """
+    """ Interpolates 3rd-degree polynomials from given waypoints (t, (x, y)) """
     a_b = find_a_b(waypts)
     # Pull out timespan
     t = np.linspace(waypts[0][0], waypts[-1][0], num=N)

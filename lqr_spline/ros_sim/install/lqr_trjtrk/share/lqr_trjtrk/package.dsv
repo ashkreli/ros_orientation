@@ -1,0 +1,9 @@
+source;share/lqr_trjtrk/hook/pythonpath.ps1
+source;share/lqr_trjtrk/hook/pythonpath.dsv
+source;share/lqr_trjtrk/hook/pythonpath.sh
+source;share/lqr_trjtrk/hook/ament_prefix_path.ps1
+source;share/lqr_trjtrk/hook/ament_prefix_path.dsv
+source;share/lqr_trjtrk/hook/ament_prefix_path.sh
+source;../../build/lqr_trjtrk/share/lqr_trjtrk/hook/pythonpath_develop.ps1
+source;../../build/lqr_trjtrk/share/lqr_trjtrk/hook/pythonpath_develop.dsv
+source;../../build/lqr_trjtrk/share/lqr_trjtrk/hook/pythonpath_develop.sh
