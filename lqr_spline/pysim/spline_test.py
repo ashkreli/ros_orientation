@@ -16,7 +16,8 @@ I = 2
 dt = 1 / I
 
 
-with open('pysim/start.yaml') as f:
+#with open('pysim/start.yaml') as f:
+with open('start.yaml') as f:
     start = yaml.safe_load(f)
     x_0 = start['x_0']
     y_0 = start['y_0']
@@ -45,8 +46,14 @@ u_refs = u_refs_og.copy()
 for i in range(N - 1):
     for j in range(I):
         # get the next control input vector from the lqr controller
-        U_cvxpy.append(lqr.lqr_traj_track_cvxpy(S_cvxpy, s_refs, u_refs, dt)[0])
-        U_dare.append(lqr.lqr_traj_track_dare(S_dare, s_refs, u_refs, dt)[0])
+        ''' uncomment the following line for recieving the trajectory tracking cvxpy control input'''
+        #U_cvxpy.append(lqr.lqr_traj_track_cvxpy(S_cvxpy,s_refs,u_refs,dt)[0])
+        ''' uncomment the following line for recieving the evolving refrence point tracking cvxpy control input'''
+        U_cvxpy.append(lqr.lqr_evol_ref_cvxpy(S_cvxpy,s_refs,dt)[0])        
+        ''' uncomment the following line for recieving the trajectory tracking DARE control input'''
+        #U_dare.append(lqr.lqr_traj_track_dare(S_dare, s_refs, u_refs, dt)[0])
+        ''' uncomment the following line for recieving the evolving refrence point tracking DARE control input'''
+        U_dare.append(lqr.lqr_evol_ref_dare(S_dare, s_refs, dt)[0])
         # get the system's state and control input matrices
         A = sim_move.getA()
         B_cvxpy = sim_move.getB(S_cvxpy[-1], dt)
