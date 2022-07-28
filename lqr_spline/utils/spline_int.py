@@ -37,21 +37,22 @@ def find_a_b(pts: List[Tuple[float, np.array]]):
 
     return a_b.value
 
-def atan2(y: List[float], x: List[float]):
+def atan2(y: List[float], x: List[float]) -> List[float]:
     """ Returns atan2 of each (x, y) pair """
     a = []
     for i in range(len(y)):
         a.append(math.atan2(y[i], x[i]))
     return a
 
-def sqrt(lst: List[float]):
+def sqrt(lst: List[float]) -> List[float]:
     """ Returns the sqrt of each element of a list """
     a = []
     for el in lst:
         a.append(math.sqrt(el))
     return a
 
-def gen_s_u(waypts: List[Tuple[float, np.array]], N:int):
+def gen_s_u(waypts: List[Tuple[float, np.array]], 
+            N: int) -> Tuple[List[np.array], List[np.array]]:
     """ Interpolates 3rd-degree polynomials from given waypoints (t, (x, y)) """
     a_b = find_a_b(waypts)
     # Pull out timespan
@@ -82,8 +83,10 @@ def gen_s_u(waypts: List[Tuple[float, np.array]], N:int):
     # print(str(u_t))
     return s_t, u_t
 
-def attach_t(waypts: List[np.array], max_vels: List[float]):
+def attach_t(waypts: List[np.array], 
+             max_vels: List[float]) -> List[Tuple[float, np.array]]:
     """ Estimate time by which each waypoint could be traversed """
+    # Make sure max_vel is specified between every two consecutive waypoints
     assert(len(waypts) - 1 == len(max_vels))
     def dist(p1: np.array, p2: np.array):
         return math.sqrt((p1[0] - p2[0])**2 +

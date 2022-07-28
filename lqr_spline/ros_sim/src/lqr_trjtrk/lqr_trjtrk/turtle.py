@@ -34,6 +34,8 @@ global MAX_LIN, MAX_ANG
 MAX_LIN = 0.6
 MAX_ANG = 2.5
 
+f = open('states.txt', 'w')
+
 class Turtle(Node):
     def __init__(self):
         super().__init__('turtle')
@@ -137,18 +139,27 @@ class Turtle(Node):
                                                           max_lin=MAX_LIN, 
                                                           max_ang=MAX_ANG, 
                                                           num_steps=N)
-        # TODO: Spline-interpolated trajectory through some arbitrary points
+        # Spline-interpolated trajectory through some arbitrary points
         '''waypts = [np.array([[1], [1]]), 
                   np.array([[2], [4]]), 
                   np.array([[5], [2]]), 
                   np.array([[6], [6]])]
         max_vels = [0.1, 0.1, 0.1]
         waypts = attach_t(waypts, max_vels)
-        s_refs, u_refs = gen_s_u(waypts, N)'''
+        s_refs, u_refs = gen_s_u(waypts, N)
+        dt = (waypts[-1][0] - waypts[0][0]) / N'''
 
         self.s_refs = s_refs
         self.u_refs = u_refs
         self.dt = dt
+
+        # Write trajectory points to 'refs.txt'
+        with open('refs.txt', 'w') as f1:
+            for s_ref in s_refs:
+                f1.write(np.array2string(s_ref) + '\n')
+                #f1.write(str(s_ref[0][0]) + '\n' + 
+                #         str(s_ref[1][0]) + '\n' + 
+                #         str(s_ref[2][0]))
     
     def next_waypoint(self):
         """ Pops the most recent waypoint to give priority to the future ones """
@@ -172,6 +183,8 @@ class Turtle(Node):
                                         self.pose.orientation.y,
                                         self.pose.orientation.z,
                                         self.pose.orientation.w)[2])]])
+            f.write(np.array2string(new_state) + '\n')
+            #f.write(str(new_state[0][0]) + '\n' + str(new_state[1][0]) + '\n' + str(new_state[2][0]))
             self.states.append(new_state)
             # Pull first control input given by LQR
             u = lqr.lqr_traj_track_dare(self.states, self.s_refs, self.u_refs, self.dt)[0]
@@ -195,6 +208,7 @@ def main(args = None):
     # when the garbage collector destroys the node object)
     turtle_node.destroy_node()
     rclpy.shutdown()
+    f.close()
 
 if __name__ == '__main__':
     main()
