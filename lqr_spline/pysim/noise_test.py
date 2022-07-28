@@ -69,7 +69,7 @@ S_spl_traj = [np.array([[x_0], [y_0], [theta_0]])]
 U_spl_traj = [np.array([[0],[0]])]
 S_spl_evol = [np.array([[x_0], [y_0], [theta_0]])]
 U_spl_evol = [np.array([[0],[0]])]
-s_refs_og_spl, u_refs_og_spl = gen_s_u(waypts, 20)
+s_refs_og_spl, u_refs_og_spl = gen_s_u(waypts, 50)
 S_spl_traj, U_spl_traj, S_spl_evol, U_spl_evol = plot_performance(s_refs_og_spl, u_refs_og_spl, S_spl_traj, U_spl_traj, S_spl_evol, U_spl_evol)
 
 S_cir_traj = [np.array([[x_0], [y_0], [theta_0]])]
