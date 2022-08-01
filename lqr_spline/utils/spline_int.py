@@ -87,7 +87,7 @@ def attach_t(waypts: List[np.array],
              max_vels: List[float]) -> List[Tuple[float, np.array]]:
     """ Estimate time by which each waypoint could be traversed """
     # Make sure max_vel is specified between every two consecutive waypoints
-    assert(len(waypts) - 1 == len(max_vels))
+    assert(len(waypts) - 1 <= len(max_vels))
     def dist(p1: np.array, p2: np.array):
         return math.sqrt((p1[0] - p2[0])**2 +
                          (p1[1] - p2[1])**2)

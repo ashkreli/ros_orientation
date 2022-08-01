@@ -31,7 +31,7 @@ global N
 N = 50
 # Velocity Constraints
 global MAX_LIN, MAX_ANG
-MAX_LIN = 0.6
+MAX_LIN = 0.5
 MAX_ANG = 2.5
 
 f = open('states.txt', 'w')
@@ -76,15 +76,13 @@ class Turtle(Node):
         # Publisher to own cmd_vel
         self.pub_cmd_vel = self.create_publisher(Twist,
                                                 '/' + self.name + '/cmd_vel',
-                                                10)
+                                                1)
    
         # Subscribe to own pose_twist
         self.sub_pose = self.create_subscription(Odometry,
                                                 '/' + self.name + '/odom',
                                                 self.update_pose_twist,
-                                                10)
-        # counts the number of LQR calcs to do for each waypoint
-        self.i = I
+                                                1)
        
         # list of all turtlebot states init at start point
         self.states = []
@@ -134,23 +132,26 @@ class Turtle(Node):
     def traj_path(self):
         """ Pick one of the trajectories by commenting out the rest """
         # Circle trajectory informed by the physical constraints of the Turtlebot
-        s_refs, u_refs, dt = trajectory_shapes.circle_inf(center=(0.0, 0.0), 
+        '''s_refs, u_refs, dt = trajectory_shapes.circle_inf(center=(0.0, 0.0), 
                                                           radius=10.0, 
                                                           max_lin=MAX_LIN, 
                                                           max_ang=MAX_ANG, 
-                                                          num_steps=N)
+                                                          num_steps=N)'''
         # Spline-interpolated trajectory through some arbitrary points
-        '''waypts = [np.array([[1], [1]]), 
+        waypts = [np.array([[1], [1]]), 
                   np.array([[2], [4]]), 
                   np.array([[5], [2]]), 
                   np.array([[6], [6]])]
-        max_vels = [0.1, 0.1, 0.1]
+        max_vels = [MAX_LIN/10, MAX_LIN/20, MAX_LIN/20]
         waypts = attach_t(waypts, max_vels)
         s_refs, u_refs = gen_s_u(waypts, N)
-        dt = (waypts[-1][0] - waypts[0][0]) / N'''
+        dt = (waypts[-1][0] - waypts[0][0]) / N
+        #self.get_logger().info("dt: " + str(dt))
 
         self.s_refs = s_refs
+        #self.get_logger().info(str(s_refs))
         self.u_refs = u_refs
+        #self.get_logger().info(str(u_refs))
         self.dt = dt
 
         # Write trajectory points to 'refs.txt'
@@ -187,7 +188,8 @@ class Turtle(Node):
             #f.write(str(new_state[0][0]) + '\n' + str(new_state[1][0]) + '\n' + str(new_state[2][0]))
             self.states.append(new_state)
             # Pull first control input given by LQR
-            u = lqr.lqr_traj_track_dare(self.states, self.s_refs, self.u_refs, self.dt)[0]
+            u = lqr.lqr_traj_track_dare(self.states, self.s_refs, self.u_refs, self.dt / I)[0]
+            # u = lqr.lqr_evol_ref_cvxpy(self.states, self.s_refs, self.dt / I)[0]
         cmd_vel = Twist()
         cmd_vel.linear.x = u[0][0]
         cmd_vel.angular.z = u[1][0]

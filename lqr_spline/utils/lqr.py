@@ -119,7 +119,9 @@ def lqr_traj_track_dare(S: List[np.array],
         new_s.append(sim_move.state_space_model(sim_move.getA(), new_s[i], sim_move.getB(new_s[i],dt), u[i]))
     return u
 
-def lqr_evol_ref_cvxpy(S: List[np.array],s_refs: List[np.array],dt: float) -> List[np.array]:
+def lqr_evol_ref_cvxpy(S: List[np.array],
+                       s_refs: List[np.array],
+                       dt: float) -> List[np.array]:
     """
     This is the LQR Evolving Refrence Point method.
     Produces the control input vector based on an LQR controller
