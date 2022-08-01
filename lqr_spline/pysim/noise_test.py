@@ -6,7 +6,7 @@ from plot_utils import unpack
 import trajectory_shapes
 
 import sys, pathlib, os
-path = pathlib.Path(__file__).parent.parent.absolute()
+path = pathlib.Path(__file__).absolute().parent.parent
 sys.path.append(os.path.join(str(path), 'utils'))
 import sim_move, lqr
 from spline_int import attach_t, gen_s_u

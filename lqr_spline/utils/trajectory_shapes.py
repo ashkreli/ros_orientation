@@ -3,7 +3,7 @@
 import math
 import numpy as np
 from typing import Tuple, List
-
+from calcs import normalize
 
 def dist(p1: Tuple[float, float], p2: Tuple[float, float]) -> float:
     """ Returns the distance between p1 and p2 """
@@ -23,7 +23,7 @@ def straight_line(pos_start: Tuple[float, float],
 
     lin_vel = dist(pos_start, pos_end) / N
 
-    theta = math.atan2(y_end - y_start, x_end - x_start)
+    theta = normalize(math.atan2(y_end - y_start, x_end - x_start))
 
     s_t = []
     u_t = []
@@ -86,7 +86,7 @@ def circle_inf(center : Tuple[float, float],
     theta = 0
 
     for i in range(num_steps):
-        s_t.append(np.array([[x], [y], [theta + math.pi / 2]]))
+        s_t.append(np.array([[x], [y], [normalize(theta + math.pi / 2)]]))
         u_t.append(np.array([[lin_vel], [ang_vel]]))
         theta += ang_vel
         x = radius * math.cos(theta) + center[0]

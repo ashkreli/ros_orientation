@@ -2,7 +2,7 @@ from typing import List
 import numpy as np
 import cvxpy as cvx
 
-import sim_move
+import sim_move, calcs
 
 def lqr_traj_track_cvxpy(S: List[np.array],
                          s_refs: List[np.array],
@@ -115,7 +115,8 @@ def lqr_traj_track_dare(S: List[np.array],
     for i in range(N):
         # Calculate the optimal feedback gain K
         K[i] = np.linalg.pinv(R + B_tildes[i].T @ P[i+1] @ B_tildes[i]) @ B_tildes[i].T @ P[i+1] @ A_tildes[i]
-        u[i] = - K[i] @ (new_s[i] - s_refs[i]) + u_refs[i]
+        # u[i] = - K[i] @ (new_s[i] - s_refs[i]) + u_refs[i]
+        u[i] = - (K[i] @ calcs.state_error(new_s[i], s_refs[i])) + u_refs[i]
         new_s.append(sim_move.state_space_model(sim_move.getA(), new_s[i], sim_move.getB(new_s[i],dt), u[i]))
     return u
 
@@ -241,6 +242,9 @@ def getAtildes(s_refs: List[np.array], u_refs: List[np.array], dt: float) -> Lis
         A_tildes.append(np.array([[1, 0, (-dt * u_ref[0] * np.sin(s_ref[2]))[0]],
                                   [0, 1,  (dt * u_ref[0] * np.cos(s_ref[2]))[0]],
                                   [0, 0,  1                                    ]]))
+        '''A_tildes.append(np.array([[1, 0, (dt * u_ref[0] * np.sin(s_ref[2]))[0]],
+                                  [0, 1,  (-dt * u_ref[0] * np.cos(s_ref[2]))[0]],
+                                  [0, 0,  1                                    ]]))'''
     return A_tildes
 
 def getBtildes(s_refs: List[np.array], dt: float) -> List[np.array]:
@@ -253,4 +257,7 @@ def getBtildes(s_refs: List[np.array], dt: float) -> List[np.array]:
         B_tildes.append(np.array([[(dt * np.cos(s_ref[2]))[0], 0],
                             [(dt * np.sin(s_ref[2]))[0], 0],
                             [0,                         dt]]))
+        '''B_tildes.append(np.array([[(-dt * np.cos(s_ref[2]))[0], 0],
+                            [(-dt * np.sin(s_ref[2]))[0], 0],
+                            [0,                         -dt]]))'''
     return B_tildes

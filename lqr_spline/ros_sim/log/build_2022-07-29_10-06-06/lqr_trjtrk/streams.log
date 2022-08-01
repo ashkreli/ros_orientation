@@ -1,0 +1,17 @@
+[3.558s] Invoking command in '/home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk': PYTHONPATH=/home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --prefix /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk --editable --build-directory /home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk/build --no-deps install_data --install-dir /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk
+[4.947s] running develop
+[5.732s] running egg_info
+[5.733s] writing lqr_trjtrk.egg-info/PKG-INFO
+[5.735s] writing dependency_links to lqr_trjtrk.egg-info/dependency_links.txt
+[5.740s] writing entry points to lqr_trjtrk.egg-info/entry_points.txt
+[5.742s] writing requirements to lqr_trjtrk.egg-info/requires.txt
+[5.748s] writing top-level names to lqr_trjtrk.egg-info/top_level.txt
+[5.865s] reading manifest file 'lqr_trjtrk.egg-info/SOURCES.txt'
+[5.868s] writing manifest file 'lqr_trjtrk.egg-info/SOURCES.txt'
+[6.097s] running build_ext
+[6.098s] Creating /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/python3.8/site-packages/lqr-trjtrk.egg-link (link to .)
+[6.102s] Installing turtle script to /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/lqr_trjtrk
+[6.104s] 
+[6.104s] Installed /home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk
+[6.104s] running install_data
+[6.205s] Invoked command in '/home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk' returned '0': PYTHONPATH=/home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --prefix /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk --editable --build-directory /home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk/build --no-deps install_data --install-dir /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk

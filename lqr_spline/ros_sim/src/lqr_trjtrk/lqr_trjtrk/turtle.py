@@ -28,13 +28,14 @@ I = 2
 # dt = 1 / I # s
 # Number of waypoints making up a trajectory
 global N
-N = 50
+N = 80
 # Velocity Constraints
 global MAX_LIN, MAX_ANG
 MAX_LIN = 0.5
-MAX_ANG = 2.5
+MAX_ANG = 2.0
 
 f = open('states.txt', 'w')
+f_actual_inputs = open('inputs_actual.txt', 'w')
 
 class Turtle(Node):
     def __init__(self):
@@ -132,20 +133,20 @@ class Turtle(Node):
     def traj_path(self):
         """ Pick one of the trajectories by commenting out the rest """
         # Circle trajectory informed by the physical constraints of the Turtlebot
-        '''s_refs, u_refs, dt = trajectory_shapes.circle_inf(center=(0.0, 0.0), 
+        s_refs, u_refs, dt = trajectory_shapes.circle_inf(center=(0.0, 0.0), 
                                                           radius=10.0, 
                                                           max_lin=MAX_LIN, 
                                                           max_ang=MAX_ANG, 
-                                                          num_steps=N)'''
+                                                          num_steps=N)
         # Spline-interpolated trajectory through some arbitrary points
-        waypts = [np.array([[1], [1]]), 
+        '''waypts = [np.array([[1], [1]]), 
                   np.array([[2], [4]]), 
                   np.array([[5], [2]]), 
                   np.array([[6], [6]])]
-        max_vels = [MAX_LIN/10, MAX_LIN/20, MAX_LIN/20]
+        max_vels = [MAX_LIN/5, MAX_LIN/5, MAX_LIN/5]
         waypts = attach_t(waypts, max_vels)
         s_refs, u_refs = gen_s_u(waypts, N)
-        dt = (waypts[-1][0] - waypts[0][0]) / N
+        dt = (waypts[-1][0] - waypts[0][0]) / N'''
         #self.get_logger().info("dt: " + str(dt))
 
         self.s_refs = s_refs
@@ -158,9 +159,10 @@ class Turtle(Node):
         with open('refs.txt', 'w') as f1:
             for s_ref in s_refs:
                 f1.write(np.array2string(s_ref) + '\n')
-                #f1.write(str(s_ref[0][0]) + '\n' + 
-                #         str(s_ref[1][0]) + '\n' + 
-                #         str(s_ref[2][0]))
+        # Write trajectory inputs to 'inputs_ideal.txt'
+        with open('inputs_ideal.txt', 'w') as f2:
+            for u_ref in u_refs:
+                f2.write(np.array2string(u_ref) + '\n')
     
     def next_waypoint(self):
         """ Pops the most recent waypoint to give priority to the future ones """
@@ -189,6 +191,7 @@ class Turtle(Node):
             self.states.append(new_state)
             # Pull first control input given by LQR
             u = lqr.lqr_traj_track_dare(self.states, self.s_refs, self.u_refs, self.dt / I)[0]
+            f_actual_inputs.write(np.array2string(u) + '\n')
             # u = lqr.lqr_evol_ref_cvxpy(self.states, self.s_refs, self.dt / I)[0]
         cmd_vel = Twist()
         cmd_vel.linear.x = u[0][0]
@@ -210,7 +213,9 @@ def main(args = None):
     # when the garbage collector destroys the node object)
     turtle_node.destroy_node()
     rclpy.shutdown()
+    # Close the data files to be plotted later
     f.close()
+    f_actual_inputs.close()
 
 if __name__ == '__main__':
     main()

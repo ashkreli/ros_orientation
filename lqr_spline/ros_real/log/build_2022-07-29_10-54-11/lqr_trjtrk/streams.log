@@ -1,0 +1,17 @@
+[3.129s] Invoking command in '/home/ashkreli/ros_orientation/lqr_spline/ros_real/build/lqr_trjtrk': PYTHONPATH=/home/ashkreli/ros_orientation/lqr_spline/ros_real/install/lqr_trjtrk/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --prefix /home/ashkreli/ros_orientation/lqr_spline/ros_real/install/lqr_trjtrk --editable --build-directory /home/ashkreli/ros_orientation/lqr_spline/ros_real/build/lqr_trjtrk/build --no-deps install_data --install-dir /home/ashkreli/ros_orientation/lqr_spline/ros_real/install/lqr_trjtrk
+[4.133s] running develop
+[4.684s] running egg_info
+[4.686s] writing lqr_trjtrk.egg-info/PKG-INFO
+[4.688s] writing dependency_links to lqr_trjtrk.egg-info/dependency_links.txt
+[4.690s] writing entry points to lqr_trjtrk.egg-info/entry_points.txt
+[4.691s] writing requirements to lqr_trjtrk.egg-info/requires.txt
+[4.693s] writing top-level names to lqr_trjtrk.egg-info/top_level.txt
+[4.765s] reading manifest file 'lqr_trjtrk.egg-info/SOURCES.txt'
+[4.767s] writing manifest file 'lqr_trjtrk.egg-info/SOURCES.txt'
+[4.895s] running build_ext
+[4.897s] Creating /home/ashkreli/ros_orientation/lqr_spline/ros_real/install/lqr_trjtrk/lib/python3.8/site-packages/lqr-trjtrk.egg-link (link to .)
+[4.901s] Installing robot script to /home/ashkreli/ros_orientation/lqr_spline/ros_real/install/lqr_trjtrk/lib/lqr_trjtrk
+[4.903s] 
+[4.903s] Installed /home/ashkreli/ros_orientation/lqr_spline/ros_real/build/lqr_trjtrk
+[4.906s] running install_data
+[4.986s] Invoked command in '/home/ashkreli/ros_orientation/lqr_spline/ros_real/build/lqr_trjtrk' returned '0': PYTHONPATH=/home/ashkreli/ros_orientation/lqr_spline/ros_real/install/lqr_trjtrk/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --prefix /home/ashkreli/ros_orientation/lqr_spline/ros_real/install/lqr_trjtrk --editable --build-directory /home/ashkreli/ros_orientation/lqr_spline/ros_real/build/lqr_trjtrk/build --no-deps install_data --install-dir /home/ashkreli/ros_orientation/lqr_spline/ros_real/install/lqr_trjtrk

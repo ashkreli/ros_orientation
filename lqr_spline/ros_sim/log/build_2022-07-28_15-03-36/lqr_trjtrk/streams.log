@@ -1,0 +1,25 @@
+[1.895s] Invoking command in '/home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk': PYTHONPATH=/home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --prefix /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk --editable --build-directory /home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk/build --no-deps install_data --install-dir /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk
+[2.411s] running develop
+[2.746s] running egg_info
+[2.747s] writing lqr_trjtrk.egg-info/PKG-INFO
+[2.748s] writing dependency_links to lqr_trjtrk.egg-info/dependency_links.txt
+[2.749s] writing entry points to lqr_trjtrk.egg-info/entry_points.txt
+[2.751s] writing requirements to lqr_trjtrk.egg-info/requires.txt
+[2.752s] writing top-level names to lqr_trjtrk.egg-info/top_level.txt
+[2.828s] reading manifest file 'lqr_trjtrk.egg-info/SOURCES.txt'
+[2.831s] writing manifest file 'lqr_trjtrk.egg-info/SOURCES.txt'
+[2.906s] running build_ext
+[2.909s] Creating /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/python3.8/site-packages/lqr-trjtrk.egg-link (link to .)
+[2.911s] Installing turtle script to /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/lqr_trjtrk
+[2.912s] 
+[2.912s] Installed /home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk
+[2.913s] running install_data
+[2.913s] creating /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/share/ament_index
+[2.913s] creating /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/share/ament_index/resource_index
+[2.913s] creating /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/share/ament_index/resource_index/packages
+[2.914s] copying resource/lqr_trjtrk -> /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/share/ament_index/resource_index/packages
+[2.914s] copying package.xml -> /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/share/lqr_trjtrk
+[2.914s] copying launch/lqr_trjtrk.launch.py -> /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/share/lqr_trjtrk/launch
+[2.915s] creating /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/share/lqr_trjtrk/config
+[2.915s] copying config/turtle_params.yaml -> /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/share/lqr_trjtrk/config
+[2.989s] Invoked command in '/home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk' returned '0': PYTHONPATH=/home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py develop --prefix /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk --editable --build-directory /home/ashkreli/ros_orientation/lqr_spline/ros_sim/build/lqr_trjtrk/build --no-deps install_data --install-dir /home/ashkreli/ros_orientation/lqr_spline/ros_sim/install/lqr_trjtrk

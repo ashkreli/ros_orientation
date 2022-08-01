@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import sys, pathlib, os
 path = pathlib.Path(__file__).parent.parent.absolute()
 sys.path.append(os.path.join(str(path), 'utils'))
-import sim_move, lqr
+import sim_move, lqr, calcs
 
 
 def objective_function(pts: List[Tuple[float, np.array]]):
@@ -49,6 +49,12 @@ def sqrt(lst: List[float]) -> List[float]:
     a = []
     for el in lst:
         a.append(math.sqrt(el))
+    return a
+
+def normalize(lst: List[float]) -> List[float]:
+    a = []
+    for el in lst:
+        a.append(calcs.normalize(el))
     return a
 
 def gen_s_u(waypts: List[Tuple[float, np.array]], 

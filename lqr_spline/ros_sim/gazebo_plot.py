@@ -1,5 +1,4 @@
 from typing import List
-from itertools import islice
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -10,8 +9,6 @@ path = os.path.join(path, 'utils')
 sys.path.append(str(path))
 from plot_utils import unpack
 
-# TODO: parse states.txt into np arrays
-# TODO: parse refs.txt into np arrays
 
 def parse_into_np(filename: str, elt_num) -> List[np.array]:
     array_list = []
@@ -19,7 +16,7 @@ def parse_into_np(filename: str, elt_num) -> List[np.array]:
         array_elts = []
         for line in f.readlines():
             if len(array_elts) == elt_num:
-                array_list.append(np.array([[array_elts[0]],[array_elts[1]],[array_elts[2]]]))
+                array_list.append(np.array([[array_elts[i]] for i in range(elt_num)]))
                 array_elts = []
             array_elts.append(np.float(line.strip().replace('[', '').replace(']', '')))
     return array_list
@@ -28,6 +25,13 @@ states = parse_into_np('states.txt', 3)
 x_real, y_real = unpack(states)
 refs = parse_into_np('refs.txt', 3)
 x_refs, y_refs = unpack(refs)
+
+u_ideal = parse_into_np('inputs_ideal.txt', 2)
+v_ideal, omega_ideal = unpack(u_ideal)
+u_actual = parse_into_np('inputs_actual.txt', 2)
+v_actual, omega_actual = unpack(u_actual)
+
+
 
 # plot
 fig, ax = plt.subplots()
@@ -38,5 +42,14 @@ ax.legend((l1, l2), ('Reference', 'Simulation'), loc='upper right', shadow=True)
 ax.set_xlabel('x')
 ax.set_ylabel('y')
 ax.set_title('Gazebo Simulation')
+
+fig, ax1 = plt.subplots()
+l3, = ax1.plot(v_ideal, omega_ideal, '--og', markersize=2)
+l4, = ax1.plot(v_actual, omega_actual, '--r', markersize=2)
+
+ax1.legend((l3, l4), ('Reference', 'Simulation'), loc='upper right', shadow=True)
+ax1.set_xlabel('v')
+ax1.set_ylabel('omega')
+ax1.set_title('Gazebo Simulation')
 
 plt.show()
