@@ -117,7 +117,10 @@ def lqr_traj_track_dare(S: List[np.array],
         K[i] = np.linalg.pinv(R + B_tildes[i].T @ P[i+1] @ B_tildes[i]) @ B_tildes[i].T @ P[i+1] @ A_tildes[i]
         # u[i] = - K[i] @ (new_s[i] - s_refs[i]) + u_refs[i]
         u[i] = - (K[i] @ calcs.state_error(new_s[i], s_refs[i])) + u_refs[i]
-        new_s.append(sim_move.state_space_model(sim_move.getA(), new_s[i], sim_move.getB(new_s[i],dt), u[i]))
+        new_s.append(sim_move.state_space_model(sim_move.getA(), 
+                                                new_s[i], 
+                                                sim_move.getB(new_s[i], dt), 
+                                                u[i]))
     return u
 
 def lqr_evol_ref_cvxpy(S: List[np.array],
@@ -177,7 +180,9 @@ def lqr_evol_ref_cvxpy(S: List[np.array],
         U.append(u_list[i].value)
     return U
 
-def lqr_evol_ref_dare(S: List[np.array],s_refs: List[np.array], dt: float) -> List[np.array]:
+def lqr_evol_ref_dare(S: List[np.array],
+                      s_refs: List[np.array],
+                      dt: float) -> List[np.array]:
     """
     This is the LQR Evolving Refrence Point method.
     Produces the control input vector based on an LQR controller
@@ -186,7 +191,7 @@ def lqr_evol_ref_dare(S: List[np.array],s_refs: List[np.array], dt: float) -> Li
     """
     
     # R matrix - The control input cost matrix
-    R = np.array([[2,   0],  # Penalty for linear velocity error
+    R = np.array([[2,   0],    # Penalty for linear velocity error
                   [0,   0.5]]) # Penalty for angular velocity error
     # Q matrix - The state cost matrix.
     Q = np.array([[2, 0, 0],  # Penalize X position error 
@@ -212,7 +217,6 @@ def lqr_evol_ref_dare(S: List[np.array],s_refs: List[np.array], dt: float) -> Li
 
     # For i = N, ..., 1
     for i in range(N, 0, -1):
-        
         # Discrete-time Algebraic Riccati equation to calculate the optimal 
         # state cost matrix
         P[i-1] = Q + A_hat.T @ P[i] @ A_hat - (A_hat.T @ P[i] @ B_hat) @ np.linalg.pinv(
@@ -228,14 +232,18 @@ def lqr_evol_ref_dare(S: List[np.array],s_refs: List[np.array], dt: float) -> Li
     for i in range(N):
         # Calculate the optimal feedback gain K
         K[i] = np.linalg.pinv(R + B_hat.T @ P[i+1] @ B_hat) @ B_hat.T @ P[i+1] @ A_hat
-        u[i] = - K[i] @ (new_s[i] - s_refs[0])
-        new_s.append(sim_move.state_space_model(sim_move.getA(), new_s[i], sim_move.getB(new_s[i],dt), u[i]))
+        u[i] = - K[i] @ calcs.state_error(new_s[i], s_refs[0])
+        # u[i] = - K[i] @ (new_s[i] - s_refs[0])
+        new_s.append(sim_move.state_space_model(sim_move.getA(), 
+                                                new_s[i], 
+                                                sim_move.getB(new_s[i],dt), 
+                                                u[i]))
     return u
 
 def getAtildes(s_refs: List[np.array], u_refs: List[np.array], dt: float) -> List[np.array]:
     """
     Calculates and returns the state matrices for the delta system
-    for ALL refrences
+    for ALL references
     """
     A_tildes = []
     for (s_ref,u_ref) in zip(s_refs,u_refs):
@@ -250,7 +258,7 @@ def getAtildes(s_refs: List[np.array], u_refs: List[np.array], dt: float) -> Lis
 def getBtildes(s_refs: List[np.array], dt: float) -> List[np.array]:
     """
     Calculates and returns the control input matrices for the delta system
-    for ALL refrences
+    for ALL references
     """
     B_tildes = []
     for s_ref in s_refs:

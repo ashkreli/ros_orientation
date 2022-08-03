@@ -27,6 +27,7 @@ def objective_function(pts: List[Tuple[float, np.array]]):
         b = np.concatenate((b, pts[i][1]), axis=0)
     return A, b
 
+
 def find_a_b(pts: List[Tuple[float, np.array]]):
     """ Solve least-squares fitting for x(t) and y(t) coeffs """
     a_b = cp.Variable((8, 1))
@@ -37,12 +38,14 @@ def find_a_b(pts: List[Tuple[float, np.array]]):
 
     return a_b.value
 
+
 def atan2(y: List[float], x: List[float]) -> List[float]:
     """ Returns atan2 of each (x, y) pair """
     a = []
     for i in range(len(y)):
         a.append(math.atan2(y[i], x[i]))
     return a
+
 
 def sqrt(lst: List[float]) -> List[float]:
     """ Returns the sqrt of each element of a list """
@@ -51,11 +54,13 @@ def sqrt(lst: List[float]) -> List[float]:
         a.append(math.sqrt(el))
     return a
 
+
 def normalize(lst: List[float]) -> List[float]:
     a = []
     for el in lst:
         a.append(calcs.normalize(el))
     return a
+
 
 def gen_s_u(waypts: List[Tuple[float, np.array]], 
             N: int) -> Tuple[List[np.array], List[np.array]]:
@@ -88,6 +93,7 @@ def gen_s_u(waypts: List[Tuple[float, np.array]],
         u_t.append(np.array([[v[i]], [omega[i]]]))
     # print(str(u_t))
     return s_t, u_t
+
 
 def attach_t(waypts: List[np.array], 
              max_vels: List[float]) -> List[Tuple[float, np.array]]:

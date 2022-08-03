@@ -22,17 +22,21 @@ from spline_int import attach_t, gen_s_u
 
 # Number of times between waypoints that LQR controller will be used
 global I
-I = 2
-# Time step for state evolution and timer callback
-# global dt
-# dt = 1 / I # s
+# Spline
+#I = 2
+# Line / Circle
+I = 1
+
 # Number of waypoints making up a trajectory
 global N
-N = 80
+# Spline
+# N = 50
+# Line / Circle
+N = 100
 # Velocity Constraints
 global MAX_LIN, MAX_ANG
 MAX_LIN = 0.5
-MAX_ANG = 2.0
+MAX_ANG = 1.7
 
 f = open('states.txt', 'w')
 f_actual_inputs = open('inputs_actual.txt', 'w')
@@ -133,22 +137,28 @@ class Turtle(Node):
     def traj_path(self):
         """ Pick one of the trajectories by commenting out the rest """
         # Circle trajectory informed by the physical constraints of the Turtlebot
-        s_refs, u_refs, dt = trajectory_shapes.circle_inf(center=(0.0, 0.0), 
-                                                          radius=10.0, 
+        '''s_refs, u_refs, dt = trajectory_shapes.circle_inf(center=(0.0, 0.0), 
+                                                          radius=6.0, 
                                                           max_lin=MAX_LIN, 
                                                           max_ang=MAX_ANG, 
-                                                          num_steps=N)
+                                                          num_steps=N)'''
         # Spline-interpolated trajectory through some arbitrary points
         '''waypts = [np.array([[1], [1]]), 
                   np.array([[2], [4]]), 
                   np.array([[5], [2]]), 
                   np.array([[6], [6]])]
-        max_vels = [MAX_LIN/5, MAX_LIN/5, MAX_LIN/5]
+        max_vels = [MAX_LIN/4, MAX_LIN/4, MAX_LIN/4]
         waypts = attach_t(waypts, max_vels)
         s_refs, u_refs = gen_s_u(waypts, N)
         dt = (waypts[-1][0] - waypts[0][0]) / N'''
-        #self.get_logger().info("dt: " + str(dt))
-
+        # Linear Trajectory
+        waypts = [np.array([[1], [1]]), 
+                     np.array([[5], [6]])]
+        max_vels = [MAX_LIN/1.5, MAX_LIN/1.5]
+        waypts = attach_t(waypts, max_vels)
+        s_refs, u_refs = gen_s_u(waypts, N)
+        dt = (waypts[-1][0] - waypts[0][0]) / N
+        
         self.s_refs = s_refs
         #self.get_logger().info(str(s_refs))
         self.u_refs = u_refs

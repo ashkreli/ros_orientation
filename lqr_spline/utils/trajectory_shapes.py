@@ -5,6 +5,8 @@ import numpy as np
 from typing import Tuple, List
 from calcs import normalize
 
+
+
 def dist(p1: Tuple[float, float], p2: Tuple[float, float]) -> float:
     """ Returns the distance between p1 and p2 """
     return math.sqrt((p1[0] - p2[0])**2 +
@@ -39,6 +41,7 @@ def straight_line(pos_start: Tuple[float, float],
     
     return s_t, u_t
 
+
 def circle(center: Tuple[float, float], 
            radius: float, 
            N     : int,
@@ -62,6 +65,7 @@ def circle(center: Tuple[float, float],
     
     return s_t, u_t
     
+
 def circle_inf(center : Tuple[float, float], 
 	           radius : float, 
 	           max_lin: float,

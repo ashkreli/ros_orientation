@@ -1,3 +1,6 @@
+# Starting parameters for the simulated robot
+# x_0 and y_0 reflect starting coordinates
+# Make sure that they are reasonably close to the intended trajectories
 
 x_0: 1.0
 y_0: 3.0

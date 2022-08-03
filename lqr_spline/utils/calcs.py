@@ -2,6 +2,8 @@ import math
 from typing import Tuple
 import numpy as np
 
+
+
 def euler_from_quaternion(q_x: float, 
                           q_y: float, 
                           q_z: float, 
@@ -28,6 +30,7 @@ def euler_from_quaternion(q_x: float,
     
     return (roll, pitch, yaw)
 
+
 def normalize(angle: float) -> float:
     """ Returns angle (radians) between 0 and 2pi """
     while angle < 0.0:
@@ -35,6 +38,7 @@ def normalize(angle: float) -> float:
     while angle >= 2 * math.pi:
         angle -= 2. * math.pi
     return angle
+
 
 def state_error(s_curr: np.array, s_ref: np.array) -> np.array:
     """ Return the error that reflects the proper angular distance """

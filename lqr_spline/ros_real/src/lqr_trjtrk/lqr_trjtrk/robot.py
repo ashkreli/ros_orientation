@@ -20,11 +20,11 @@ from spline_int import attach_t, gen_s_u
 
 global MAX_LIN, MAX_ANG
 MAX_LIN = 0.22
-MAX_ANG = 2.5
+MAX_ANG = 2.0
 
 global I, N
-N = 100
-I = 1
+N = 30
+I = 3
 
 f = open('states.txt', 'w')
 
@@ -109,27 +109,26 @@ class Robot(Node):
         """ Pick one of the trajectories by commenting out the rest """
         # Circle trajectory informed by the physical constraints of the Turtlebot
         '''s_refs, u_refs, dt = trajectory_shapes.circle_inf(center=(1.5, -1.5), 
-                                                          radius=1.3, 
-                                                          max_lin=MAX_LIN, 
-                                                          max_ang=MAX_ANG/2, 
+                                                          radius=1.2, 
+                                                          max_lin=MAX_LIN/2, 
+                                                          max_ang=MAX_ANG, 
                                                           num_steps=N)'''
         # Line trajectory
-        '''s_refs, u_refs = trajectory_shapes.straight_line((0, 0), (2.0, -1.0), 25)
+        '''s_refs, u_refs = trajectory_shapes.straight_line((0, 0), (2.0, -3.0), 25)
         dt = 1'''
         # Spline-interpolated trajectory through some arbitrary points
         waypts = [np.array([[0], [0]]), 
                   np.array([[1], [-1]]), 
                   np.array([[2], [-2]]), 
                   np.array([[3], [-3]])]
-        max_vels = [MAX_LIN, MAX_LIN, MAX_LIN]
+        max_vels = [MAX_LIN*0.6, MAX_LIN*0.6, MAX_LIN*0.6]
         waypts = attach_t(waypts, max_vels)
         s_refs, u_refs = gen_s_u(waypts, N)
         dt = (waypts[-1][0] - waypts[0][0]) / N
         #self.get_logger().info("dt: " + str(dt))
-        num = N
-        self.s_refs = s_refs[0:num]
+        self.s_refs = s_refs
         #self.get_logger().info(str(s_refs))
-        self.u_refs = u_refs[0:num]
+        self.u_refs = u_refs
         #self.get_logger().info(str(u_refs))
         self.dt = round(dt, 1)
         # Write trajectory points to 'refs.txt'
