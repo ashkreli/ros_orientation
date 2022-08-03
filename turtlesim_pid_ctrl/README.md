@@ -1,7 +1,7 @@
 # **HOW TO:** Creating PID Controlled Location Seeker Simulation with ROS2 and Turtlebot
-###**Step-by-step explanation**
+### **Step-by-step explanation**
 
-Note: this assumes that from the published ROS2 tutorials all of the beginner and intermediate tutorials were complete.
+Note: this assumes that from the published ROS2 tutorials all of the 'beginner' and 'intermediate' tutorials were complete.
 
 ## 1. Configure the environment and create a workspace:
 
@@ -16,7 +16,7 @@ Note: for a deeper explanation of this look through the following tutorials:
 <https://docs.ros.org/en/foxy/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html>
 
 1. Open terminal (Ctrl+T)
-2. Paste the following with inputting your_domian_id (a number between 0-100):
+2. Paste the following with inputting your_domain_id (a number between 0-100):
 
 `echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc`
 
@@ -56,7 +56,7 @@ Note: for a deeper explanation of this look through the following tutorial:
 
 <https://docs.ros.org/en/foxy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html#rqt-graph>
 
-To understand the relevant layout of the project, we must understand which nodes we must instantiate and which topics/services/parameters/actions we’ll need to use. Since all we need is one simulation window and one Turtlebot and all we want to achieve is the movement of the said Turtlebot in the simulation window we must investigate these relationships through rqt.
+To understand the relevant layout of the project, we must understand which nodes we must instantiate and which topics/services/parameters/actions we’ll need to use. Since all we need is one simulation window and one Turtlebot and all we want to achieve is the movement of the said Turtlebot in the simulation window, we must investigate these relationships through `rqt`.
 
 1. Open two more terminals:
 
@@ -68,7 +68,7 @@ To understand the relevant layout of the project, we must understand which nodes
 
 3. Paste the following in the terminal to see all the relevant topics in a none graphical view: `ros2 topic list -t`
 
-4. This indicates that you’ll need to be using the /turtle1/pose and /turtle1/cmd_vel topics in your code. To understand exactly which components you will use within these toptics, paste the following commands in the termina (replace ‘topic type’ with the relevant topic type):
+4. This indicates that you’ll need to be using the `/turtle1/pose` and `/turtle1/cmd_vel` topics in your code. To understand exactly which components you will use within these toptics, paste the following commands in the terminal (replace ‘topic type’ with the relevant topic type):
 
 `ros2 interface show <topic type>`
 
