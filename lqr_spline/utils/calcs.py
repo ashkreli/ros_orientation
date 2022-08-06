@@ -43,6 +43,7 @@ def normalize(angle: float) -> float:
 def state_error(s_curr: np.array, s_ref: np.array) -> np.array:
     """ Return the error that reflects the proper angular distance """
     theta_err = 0
+    #sign = (s_curr[2][0] - s_ref[2][0]) / abs(s_curr[2][0] - s_ref[2][0])
     if s_curr[2][0] - s_ref[2][0] > math.pi:
         theta_err = s_curr[2][0] - (s_ref[2][0] + 2 * math.pi)
     elif s_ref[2][0] - s_curr[2][0] > math.pi:
@@ -51,4 +52,5 @@ def state_error(s_curr: np.array, s_ref: np.array) -> np.array:
         theta_err = s_curr[2][0] - s_ref[2][0]
     return np.array([[s_curr[0][0] - s_ref[0][0]], 
                      [s_curr[1][0] - s_ref[1][0]], 
-                     [theta_err]])
+     #                [sign*(theta_err)]])
+                     [(theta_err)]])

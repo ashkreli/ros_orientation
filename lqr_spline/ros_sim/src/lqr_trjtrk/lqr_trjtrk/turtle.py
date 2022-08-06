@@ -23,7 +23,7 @@ from spline_int import attach_t, gen_s_u
 # Number of times between waypoints that LQR controller will be used
 global I
 # Spline
-#I = 2
+# I = 2
 # Line / Circle
 I = 1
 
@@ -104,6 +104,9 @@ class Turtle(Node):
         self.next_waypoint_timer = self.create_timer(self.dt,
                                                      self.next_waypoint,
                                                      callback_group=self.multiple_clbk)
+        self.record_state_timer = self.create_timer(0.1,
+                                              self.record_state,
+                                              callback_group=self.multiple_clbk)
     def set_params(self):
         " Set parameters from /config and fed via launch file "
         self.req.initial_pose = Pose()
@@ -133,15 +136,15 @@ class Turtle(Node):
         """ Updates the PoseTwist of the turtle """
         self.pose = new_odom.pose.pose
         self.twist = new_odom.twist.twist
-    
+
     def traj_path(self):
         """ Pick one of the trajectories by commenting out the rest """
         # Circle trajectory informed by the physical constraints of the Turtlebot
-        '''s_refs, u_refs, dt = trajectory_shapes.circle_inf(center=(0.0, 0.0), 
+        s_refs, u_refs, dt = trajectory_shapes.circle_inf(center=(0.0, 0.0), 
                                                           radius=6.0, 
                                                           max_lin=MAX_LIN, 
                                                           max_ang=MAX_ANG, 
-                                                          num_steps=N)'''
+                                                          num_steps=N)
         # Spline-interpolated trajectory through some arbitrary points
         '''waypts = [np.array([[1], [1]]), 
                   np.array([[2], [4]]), 
@@ -152,12 +155,12 @@ class Turtle(Node):
         s_refs, u_refs = gen_s_u(waypts, N)
         dt = (waypts[-1][0] - waypts[0][0]) / N'''
         # Linear Trajectory
-        waypts = [np.array([[1], [1]]), 
-                     np.array([[5], [6]])]
+        '''waypts = [np.array([[1], [1]]), 
+                  np.array([[5], [6]])]
         max_vels = [MAX_LIN/1.5, MAX_LIN/1.5]
         waypts = attach_t(waypts, max_vels)
         s_refs, u_refs = gen_s_u(waypts, N)
-        dt = (waypts[-1][0] - waypts[0][0]) / N
+        dt = (waypts[-1][0] - waypts[0][0]) / N'''
         
         self.s_refs = s_refs
         #self.get_logger().info(str(s_refs))
@@ -180,6 +183,18 @@ class Turtle(Node):
             self.s_refs.pop(0)
             self.u_refs.pop(0)
 
+    def record_state(self):
+        """ Record current state for plots later """
+        state = np.array([[self.pose.position.x],
+                                  [self.pose.position.y],
+                                  [calcs.normalize(
+                                    euler_from_quaternion(
+                                        self.pose.orientation.x,
+                                        self.pose.orientation.y,
+                                        self.pose.orientation.z,
+                                        self.pose.orientation.w)[2])]])
+        f.write(np.array2string(state) + '\n')
+
     def approach_waypoint(self):
         """ Use LQR controller to approach the ideal trajectory """
         # Define the needed variables for LQR to operate based on system state
@@ -196,8 +211,6 @@ class Turtle(Node):
                                         self.pose.orientation.y,
                                         self.pose.orientation.z,
                                         self.pose.orientation.w)[2])]])
-            f.write(np.array2string(new_state) + '\n')
-            #f.write(str(new_state[0][0]) + '\n' + str(new_state[1][0]) + '\n' + str(new_state[2][0]))
             self.states.append(new_state)
             # Pull first control input given by LQR
             u = lqr.lqr_traj_track_dare(self.states, self.s_refs, self.u_refs, self.dt / I)[0]

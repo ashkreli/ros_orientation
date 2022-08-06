@@ -89,7 +89,7 @@ def gen_s_u(waypts: List[Tuple[float, np.array]],
     s_t = []
     u_t = []
     for i in range(len(x)):
-        s_t.append(np.array([[x[i]], [y[i]], [theta[i]]]))
+        s_t.append(np.array([[x[i]], [y[i]], [calcs.normalize(theta[i])]]))
         u_t.append(np.array([[v[i]], [omega[i]]]))
     # print(str(u_t))
     return s_t, u_t

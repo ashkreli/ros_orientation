@@ -13,6 +13,8 @@ states = parse_into_np('states.txt', 3)
 x_real, y_real = unpack(states)
 refs = parse_into_np('refs.txt', 3)
 x_refs, y_refs = unpack(refs)
+actual_inputs = parse_into_np('actual_inputs.txt', 2)
+v_actual, omega_actual = unpack(actual_inputs)
 
 # plot
 fig, ax = plt.subplots()

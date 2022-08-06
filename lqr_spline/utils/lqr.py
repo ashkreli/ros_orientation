@@ -2,6 +2,9 @@ from typing import List
 import numpy as np
 import cvxpy as cvx
 
+MAX_LIN = 0.22
+MAX_ANG = 2
+
 import sim_move, calcs
 
 def lqr_traj_track_cvxpy(S: List[np.array],
@@ -115,8 +118,16 @@ def lqr_traj_track_dare(S: List[np.array],
     for i in range(N):
         # Calculate the optimal feedback gain K
         K[i] = np.linalg.pinv(R + B_tildes[i].T @ P[i+1] @ B_tildes[i]) @ B_tildes[i].T @ P[i+1] @ A_tildes[i]
-        # u[i] = - K[i] @ (new_s[i] - s_refs[i]) + u_refs[i]
-        u[i] = - (K[i] @ calcs.state_error(new_s[i], s_refs[i])) + u_refs[i]
+        u[i] = - K[i] @ (new_s[i] - s_refs[i]) + u_refs[i]
+        #u[i] = - (K[i] @ calcs.state_error(new_s[i], s_refs[i])) + u_refs[i]
+        if u[i][0] < -MAX_LIN:
+            u[i][0] = -MAX_LIN
+        elif u[i][0] > MAX_LIN:
+            u[i][0] = MAX_LIN
+        if u[i][1] < -MAX_ANG:
+            u[i][1] = -MAX_ANG
+        elif u[i][1] > MAX_ANG:
+            u[i][1] = MAX_ANG
         new_s.append(sim_move.state_space_model(sim_move.getA(), 
                                                 new_s[i], 
                                                 sim_move.getB(new_s[i], dt), 
@@ -161,7 +172,7 @@ def lqr_evol_ref_cvxpy(S: List[np.array],
 
     for t in range(1,len(s_refs)):
     
-        # add the relavent constraint to the opt. question
+        # add the relevent constraint to the opt. question
         constraints.append(s_list[t] == A_hat @ s_list[t-1] + B_hat @ u_list[t-1])
 
         # calculate the performance index
@@ -234,6 +245,14 @@ def lqr_evol_ref_dare(S: List[np.array],
         K[i] = np.linalg.pinv(R + B_hat.T @ P[i+1] @ B_hat) @ B_hat.T @ P[i+1] @ A_hat
         u[i] = - K[i] @ calcs.state_error(new_s[i], s_refs[0])
         # u[i] = - K[i] @ (new_s[i] - s_refs[0])
+        if u[i][0] < -MAX_LIN:
+            u[i][0] = -MAX_LIN
+        elif u[i][0] > MAX_LIN:
+            u[i][0] = MAX_LIN
+        if u[i][1] < -MAX_ANG:
+            u[i][1] = -MAX_ANG
+        elif u[i][1] > MAX_ANG:
+            u[i][1] = MAX_ANG
         new_s.append(sim_move.state_space_model(sim_move.getA(), 
                                                 new_s[i], 
                                                 sim_move.getB(new_s[i],dt), 
